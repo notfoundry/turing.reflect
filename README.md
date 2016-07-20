@@ -83,7 +83,7 @@ Contextutal operations are actions that can be done without modifying the underl
   * class instance creation
   * class assignability checks
   * n-arity function invocation
-  * function return value typ inferencing
+  * function return value type inferencing
   * function argument type inferencing
 
 Pervasive operations are actions that have the ability to modify the constructs with which they interact, such as
