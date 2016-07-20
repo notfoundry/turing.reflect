@@ -6,7 +6,7 @@ This is done by manipulating the Turing interpreter to load custom-generated ins
 
 ###How does it work?
 The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder to the upper-level *support* directory of your Turing interpreter. The folder tree should look like *%install directory%/support/reflect*.
-Once that is complete, you can import turing.reflect into your project by inserting this line into the file header
+Once that is complete, you can import turing.reflect into your project by inserting this line into a source file header
 > import "%oot/reflect/universe"
 
 From there, you will have access to the **reflectc** and **reflectf** functions for reflecting classes and functions/procedures respectively. *reflectc* takes either a pointer to a class instance or the class itself (as shown below) as a argument, whereas *reflectf* takes the function/procedure to be reflected as an argument.
