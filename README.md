@@ -2,7 +2,7 @@
 
 ###What is it?
 turing.reflect provides an API for reflectively accessing and modifying classes, functions, and procedures in the Turing runtime.
-This is done by manipulating the Turing interpreter to load custom-generated instructions onto its program counter, thus giving us arbitrary opcode execution within the interpreter.
+This is done by manipulating the Turing interpreter to load custom-generated instructions onto its program counter, giving turing.reflect the ability to perform the internal interpreter operations necessary for reflection.
 
 ###How does it work?
 The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder to the upper-level *support* directory of your Turing interpreter. The folder tree should look like *%install directory%/support/reflect*.
