@@ -82,9 +82,9 @@ turing.reflect is composed of **contextual** and **pervasive** operations.
 Contextutal operations are actions that can be done without modifying the underlying opcodes from which constructs such as functions and classes are comprised, such as
   * class instance creation
   * class assignability checks
-  * n-arity function invocation
-  * function return value type inferencing
-  * function argument type inferencing
+  * function invocation
+  * function return value type resolution
+  * function argument type resolution
 
 Pervasive operations are actions that have the ability to modify the constructs with which they interact, such as
   * inserting trampolines before and after functions
