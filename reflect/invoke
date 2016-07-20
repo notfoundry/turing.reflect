@@ -1,5 +1,5 @@
 unit
-module *Invocation
+module *Invoke
     import Opcodes in "Opcodes.tu", InvocationArgument in "invocation/InvocationArgument.tu"
     export ~.*intArg, ~.*stringArg, ~.*realArg, ~.*booleanArg
     
@@ -62,4 +62,4 @@ module *Invocation
         result node
     end booleanArg
     
-end Invocation
+end Invoke
