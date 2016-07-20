@@ -1,4 +1,4 @@
-Turing-Reflection - A code introspection and reflection framework for the Turing language
+turing.reflect - A code introspection and reflection framework for the Turing language
 Copyright (C) 2016 Foundry
 
 This program is free software: you can redistribute it and/or modify
