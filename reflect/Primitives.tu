@@ -9,7 +9,7 @@ module Primitives
         NONSCALAR, VOID,
         sizeOf
     
-    type TYPE: enum(
+    type TYPE: enum (
         INT, INT1, INT2, INT4,
         NAT, NAT1, NAT2, NAT4,
         STRING,

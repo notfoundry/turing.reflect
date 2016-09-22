@@ -1,33 +1,15 @@
 unit
 class InvocationArgument
-    export construct,
-        var next, opCount, opAt, getSize, getMergeOp
-    var next: unchecked ^InvocationArgument := nil
-    var opSize, mergeOp: nat
-    var argumentOps: flexible array 1..0 of nat
+    inherit Object in "%oot/turing/lang/Object.tu"
+    import Opcodes in "%oot/reflect/Opcodes.tu"
+    export opCount, opAt, getSize, getMergeOp
     
-    proc construct(var ops: array 1..* of nat, __opSize, __mergeOp: nat)
-        new argumentOps, upper(ops)
-        for i: 1..upper(ops)
-            argumentOps(i) := ops(i)
-        end for
-        opSize := __opSize
-        mergeOp := __mergeOp
-    end construct
+    deferred fcn opCount(): nat
     
-    fcn opCount(): nat
-        result upper(argumentOps)
-    end opCount
+    deferred fcn opAt(arrIndex: nat): Opcodes.TYPE
     
-    fcn opAt(arrIndex: nat): nat
-        result argumentOps(arrIndex)
-    end opAt
+    deferred fcn getSize(): nat
     
-    fcn getSize(): nat
-        result opSize
-    end getSize
+    deferred fcn getMergeOp(): Opcodes.TYPE
     
-    fcn getMergeOp(): nat
-        result mergeOp
-    end getMergeOp
 end InvocationArgument

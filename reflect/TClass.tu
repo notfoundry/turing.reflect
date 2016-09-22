@@ -1,8 +1,10 @@
 unit
 class TClass
-    inherit Object in "%oot/turing/lang/Object.tu"
-    import TFunction in "TFunction.tu", OpInspector in "util/OpInspector.tu", ClassContext in "context/ClassContext.tu"
-    export TYPE, newInstance, getDescriptor, getSuperclass, getContext, getFunction, inspect, getName
+    inherit CodeConstruct in "CodeConstruct.tu"
+    import TFunction in "TFunction.tu",
+        OpInspector in "util/OpInspector.tu",
+        ClassContext in "context/ClassContext.tu"
+    export TYPE, newInstance, getDescriptor, getSuperclass, getContext, getFunction, getName, getObjectSize, getFunctionCount
     
     type TYPE:
         record
@@ -25,9 +27,14 @@ class TClass
     
     deferred fcn getContext(): unchecked ^ClassContext
     
-    deferred fcn getFunction(procNumber: nat): unchecked ^TFunction
+    deferred fcn getFunction(fcnNumber: nat): unchecked ^TFunction
     
-    deferred fcn inspect(): unchecked ^OpInspector
+    deferred fcn getObjectSize(): nat
+    body fcn getObjectSize(): nat
+        result getDescriptor().objSize
+    end getObjectSize
+    
+    deferred fcn getFunctionCount(): nat
     
     body fcn toString(): string
         result "class " + getName()

@@ -6,35 +6,35 @@ module CodeHelper
     fcn findProcedureEnd(start: addressint): addressint
         var curr := start
         loop
-            var op := nat @ (curr)
+            var op := Opcodes.TYPE @ (curr)
             case (op) of
-            label Opcodes.SETLINENO:
-                if (nat @ (curr+8) = Opcodes.RETURN) then result curr+8
+            label SETLINENO:
+                if (Opcodes.TYPE @ (curr+Opcodes.OP_SIZE*2) = RETURN) then result curr+Opcodes.OP_SIZE*2
                 end if
-            label Opcodes.SETFILENO:
-                if (nat @ (curr+12) = Opcodes.RETURN) then result curr+12
+            label SETFILENO:
+                if (Opcodes.TYPE @ (curr+Opcodes.OP_SIZE*3) = RETURN) then result curr+Opcodes.OP_SIZE*3
                 end if
-            label Opcodes.INCLINENO:
-                if (nat @ (curr+4) = Opcodes.RETURN) then result curr+4
+            label INCLINENO:
+                if (Opcodes.TYPE @ (curr+Opcodes.OP_SIZE) = RETURN) then result curr+Opcodes.OP_SIZE
                 end if
-            label Opcodes.DEALLOCFLEXARRAY:
-                if (nat @ (curr+4) = Opcodes.RETURN) then result curr+4
+            label DEALLOCFLEXARRAY:
+                if (Opcodes.TYPE @ (curr+Opcodes.OP_SIZE) = RETURN) then result curr+Opcodes.OP_SIZE
                 end if
-            label Opcodes.ABORT:
-                if (nat @ (curr+4) = Opcodes.ADDSET) then result curr+4
+            label ABORT:
+                if (Opcodes.TYPE @ (curr+Opcodes.OP_SIZE) = ADDSET) then result curr+Opcodes.OP_SIZE
                 end if
             label:
             end case
-            curr += sizeof(nat)
+            curr += Opcodes.OP_SIZE
         end loop
     end findProcedureEnd
     
     fcn isFunction(start, last: addressint, isClass: boolean): boolean
         var isFunction: boolean := false
-        for i: start..last by 4
-            if (nat @ (i) = Opcodes.LOCATEPARM
-                    & nat @ (i+4) = 0
-                    & nat @ (i+8) = Opcodes.FETCHADDR) then
+        for i: start..last by Opcodes.OP_SIZE
+            if (Opcodes.TYPE @ (i) = LOCATEPARM
+                    & Opcodes.TYPE @ (i+Opcodes.OP_SIZE) = 0
+                    & Opcodes.TYPE @ (i+Opcodes.OP_SIZE*2) = FETCHADDR) then
                 isFunction := true
                 exit
             end if
@@ -45,14 +45,14 @@ module CodeHelper
     fcn findClassEnd(start: addressint): addressint
         var curr := start
         loop
-            var op := nat @ (curr)
+            var op := Opcodes.TYPE @ (curr)
             case (op) of
-            label Opcodes.ASNADDR:
-                if (nat @ (curr+4) = Opcodes.RETURN) then result curr+4
+            label ASNADDR:
+                if (Opcodes.TYPE @ (curr+Opcodes.OP_SIZE) = RETURN) then result curr+Opcodes.OP_SIZE
                 end if
             label:
             end case
-            curr += sizeof(nat)
+            curr += Opcodes.OP_SIZE
         end loop
     end findClassEnd
 end CodeHelper

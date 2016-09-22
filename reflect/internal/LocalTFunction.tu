@@ -2,15 +2,23 @@ unit
 class LocalTFunction
     inherit TFunction in "%oot/reflect/TFunction.tu"
     import Opcodes in "%oot/reflect/Opcodes.tu",
+        DefinedOpInspector in "util/DefinedOpInspector.tu",
         OpcodeHelper in "%oot/reflect/internal/util/OpcodeHelper.tu",
         Primitives in "%oot/reflect/Primitives.tu",
         ReflectionFactory in "util/ReflectionFactory.tu",
-        MutableReturnValue in "%oot/reflect/invocation/MutableReturnValue.tu"
+        MutableTypeClassifier in "%oot/reflect/internal/MutableTypeClassifier.tu",
+        AnnotatedFunctionElement in "annotation/AnnotatedFunctionElement.tu",
+        MutableInvocationContext in "invocation/MutableInvocationContext.tu"
     export construct
+    
     var context: unchecked ^FunctionContext
     
-    proc construct(procedureContext: unchecked ^FunctionContext)
-        context := procedureContext
+    var annotations: unchecked ^AnnotatedElement := nil
+    
+    var returnType: unchecked ^TypeClassifier := nil
+    
+    proc construct(functionContext: unchecked ^FunctionContext)
+        context := functionContext
     end construct
     
     body fcn fetch(): addressint
@@ -22,83 +30,83 @@ class LocalTFunction
     end getContext
     
     body fcn inspect(): unchecked ^OpInspector
-        var resultInspector: ^OpInspector
+        var resultInspector: ^DefinedOpInspector
         new resultInspector; resultInspector -> construct(context -> getStartAddress(), context -> getEndAddress());
         result resultInspector
     end inspect
     
     body fcn invokeArgs(returnAddr, instanceAddr: addressint): unchecked ^InvocationContext
-        var resultContext: ^InvocationContext
+        var resultContext: ^MutableInvocationContext
         new resultContext; resultContext -> construct(context, returnAddr, instanceAddr);
         result resultContext
     end invokeArgs
     
-    body proc invoke(returnAddr: addressint)
+    body fcn getAnnotations(): unchecked ^AnnotatedElement
+        if (annotations = nil) then
+            var resultElement: ^AnnotatedFunctionElement
+            new resultElement; resultElement -> construct(getContext());
+            annotations := resultElement
+        end if
+        result annotations
+    end getAnnotations
+    
+    body proc invoke(returnAddr: addressint, instance: unchecked ^anyclass)
         type __procedure: proc x()
-        
-        var isFunction: boolean := false
-        var it := inspect()
-        loop
-            exit when ~it -> hasNext()
-            var op := it -> next()
-            if (^op = Opcodes.LOCATEPARM
-                & nat @ (#op+4) = 0
-                & nat @ (#op+8) = Opcodes.FETCHADDR) then
-                isFunction := true
-                exit
-            end if
-        end loop
-        
-        if (isFunction) then
+
+        if (context -> isFunction()) then
             var tmp: array 1..* of nat := init(
-                Opcodes.PROC, 0,
-                Opcodes.PUSHADDR1, 0, 0,
-                Opcodes.PUSHADDR, 0,
-                Opcodes.CALL, 4,
-                Opcodes.INCSP, 8,
-                Opcodes.RETURN
+                PROC, 0,
+                PUSHADDR1, 0, 0,
+                PUSHADDR, 0,
+                CALL, 4,
+                INCSP, 8,
+                RETURN
             )
             tmp(5) := context -> getStartAddress()
             tmp(7) := returnAddr
             cheat(__procedure, addr(tmp))()
         else
             var tmp: array 1..* of nat := init(
-                Opcodes.PROC, 0,
-                Opcodes.PUSHADDR1, 0, 0,
-                Opcodes.CALL, 0,
-                Opcodes.INCSP, 4,
-                Opcodes.RETURN
+                PROC, 0,
+                PUSHADDR1, 0, 0,
+                CALL, 0,
+                INCSP, 4,
+                RETURN
             )
             tmp(5) := context -> getStartAddress()
             cheat(__procedure, addr(tmp))()
         end if
     end invoke
     
-    body fcn getReturnType(): unchecked ^ReturnValue
-        var resultVal: ^MutableReturnValue; new resultVal;
-        var finalType: Primitives.TYPE; var finalSize: nat;
-        
-        var op := context -> getEndAddress()
-        loop
-            if (op = context -> getStartAddress()) then
-                finalType := Primitives.VOID
-                finalSize := Primitives.sizeOf(Primitives.VOID)
-                exit
-            elsif (OpcodeHelper.isDereferencingOp(nat @ (op))) then
-                if (nat @ (op-Opcodes.OP_SIZE) ~= Opcodes.ASNNONSCALARINV) then
-                    finalType := OpcodeHelper.returnTypeFromMergeOp(nat @ (op))
-                    const sizeLookup := Primitives.sizeOf(finalType)
-                    
-                    if (sizeLookup = Primitives.sizeOf(Primitives.NONSCALAR)) then finalSize := nat @ (op+4)
-                    elsif (sizeLookup = Primitives.sizeOf(Primitives.STRING)) then finalSize := nat @ (op-4)
-                    else finalSize := sizeLookup
-                    end if
+    body fcn getReturnType(): unchecked ^TypeClassifier
+        if (returnType = nil) then
+            var resultVal: ^MutableTypeClassifier; new resultVal;
+            var finalType: Primitives.TYPE;
+            var finalSize: nat;
+            
+            var op := context -> getEndAddress()
+            loop
+                if (op = context -> getStartAddress()) then
+                    finalType := Primitives.VOID
+                    finalSize := Primitives.sizeOf(Primitives.VOID)
                     exit
+                elsif (OpcodeHelper.isDereferencingOp(Opcodes.TYPE @ (op))) then
+                    if (Opcodes.TYPE @ (op-Opcodes.OP_SIZE) ~= ASNNONSCALARINV) then
+                        finalType := OpcodeHelper.returnTypeFromMergeOp(Opcodes.TYPE @ (op))
+                        const sizeLookup := Primitives.sizeOf(finalType)
+                        
+                        if (sizeLookup = Primitives.sizeOf(Primitives.NONSCALAR)) then finalSize := Opcodes.TYPE @ (op+Opcodes.OP_SIZE)
+                        elsif (sizeLookup = Primitives.sizeOf(Primitives.STRING)) then finalSize := Opcodes.TYPE @ (op-Opcodes.OP_SIZE)
+                        else finalSize := sizeLookup
+                        end if
+                        exit
+                    end if
                 end if
-            end if
-            op -= Opcodes.OP_SIZE
-        end loop
-        resultVal -> construct(finalType, finalSize)
-        result resultVal
+                op -= Opcodes.OP_SIZE
+            end loop
+            resultVal -> construct(finalType, finalSize)
+            returnType := resultVal
+        end if
+        result returnType
     end getReturnType
 end LocalTFunction

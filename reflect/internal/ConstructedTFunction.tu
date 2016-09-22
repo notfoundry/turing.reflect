@@ -1,19 +1,22 @@
 unit
 class ConstructedTFunction
     inherit TFunction in "%oot/reflect/TFunction.tu"
-    import Opcodes in "%oot/reflect/Opcodes.tu", FunctionContext in "%oot/reflect/context/FunctionContext.tu",
+    import Opcodes in "%oot/reflect/Opcodes.tu",
+        DefinedOpInspector in "util/DefinedOpInspector.tu",
+        FunctionContext in "%oot/reflect/context/FunctionContext.tu",
         ReflectionFactory in "util/ReflectionFactory.tu"
     export construct
     
-    var opcodes: flexible array 1..0 of nat
+    var opcodes: flexible array 1..0 of Opcodes.TYPE
+    
     var context: unchecked ^FunctionContext
     
-    proc construct(var ops: array 1..* of nat)
+    proc construct(var ops: array 1..* of Opcodes.TYPE)
         new opcodes, upper(ops)
         for i: 1..upper(ops)
             opcodes(i) := ops(i)
         end for
-        context := ReflectionFactory.makeFunctionContext(addr(opcodes(1)), false)
+        context := ReflectionFactory.makeFunctionContext(addr(opcodes), false)
     end construct
     
     body fcn fetch(): addressint
@@ -21,12 +24,12 @@ class ConstructedTFunction
     end fetch
     
     body fcn inspect(): unchecked ^OpInspector
-        var resultInspector: ^OpInspector
-        new resultInspector; resultInspector -> construct(addr(opcodes(1)), addr(opcodes(upper(opcodes))));
+        var resultInspector: ^DefinedOpInspector
+        new resultInspector; resultInspector -> construct(addr(opcodes), addr(opcodes(upper(opcodes))));
         result resultInspector
     end inspect
     
-    body proc invoke(returnAddr: addressint)
+    body proc invoke(returnAddr: addressint, instance: unchecked ^anyclass)
         type __procedure: proc x()
         var it := inspect()
         var tmp: array 1..it -> count() of nat
@@ -34,8 +37,8 @@ class ConstructedTFunction
         loop
             exit when ~it -> hasNext()
             var op := it -> next()
-            if (^op = Opcodes.LOCATEPARM & nat @ (#op+4) = 0) then
-                tmp(ind) := Opcodes.PUSHADDR;
+            if (^op = LOCATEPARM & nat @ (#op+4) = 0) then
+                tmp(ind) := PUSHADDR;
                 tmp(ind+1) := returnAddr;
                 ind += 2
                 for i: 1..2

@@ -2,27 +2,45 @@ unit
 class ClassTFunction
     inherit LocalTFunction in "LocalTFunction.tu"
     
-    body proc invoke(returnAddr: addressint)
+    body proc invoke(returnAddr: addressint, instance: unchecked ^anyclass)
         type __procedure: proc x()
-        var it := inspect()
-        var tmp: array 1..it -> count() of nat
-        var ind := 1
-        loop
-            exit when ~it -> hasNext()
-            var op := it -> next()
-            if (^op = Opcodes.LOCATEPARM & nat @ (#op+4) = 4) then
-                tmp(ind) := Opcodes.PUSHADDR;
-                tmp(ind+1) := returnAddr;
-                ind += 2
-                for i: 1..2
-                    op := it -> next()
-                end for
-            else
-                tmp(ind) := ^op
-                ind += 1
-            end if
-        end loop
-        cheat(__procedure, addr(tmp))()
+        if (getContext() -> isFunction()) then
+            var ops: array 1..* of Opcodes.TYPE := init (
+                PROC, 4,
+                PUSHADDR, 0, %returnAddr
+                PUSHADDR, 0, %instance
+                FETCHADDR,
+                RESOLVEPTR,
+                PUSHCOPY,
+                RESOLVEDEF,
+                ASNNATINV,
+                LOCATETEMP, 4, 0,
+                LOCATEARG, 8,
+                FETCHADDR,
+                CALL, 8,
+                INCSP, 16,
+                LOCATETEMP, 4, 0,
+                FETCHINT4,
+                ASNINT,
+                RETURN
+            )
+            ops(4) := returnAddr
+            ops(6) := #instance
+            cheat(__procedure, addr(ops))()
+        else
+            var ops: array 1..* of Opcodes.TYPE := init (
+                PROC, 0,
+                PUSHADDR, 0,    %instance pointer
+                PUSHADDR, 0,    %function address
+                CALL, 0,
+                INCSP, 12,
+                RETURN
+            )
+            var instref := instance
+            ops(4) := addr(instref)
+            ops(6) := fetch()
+            cheat(__procedure, addr(ops))()
+        end if
     end invoke
     
 end ClassTFunction

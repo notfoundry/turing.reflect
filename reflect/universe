@@ -1,8 +1,11 @@
 unit
 module *Universe
-    import TClass in "TClass.tu", LocalTClass in "internal/LocalTClass.tu",
-        TFunction in "TFunction.tu", LocalTFunction in "internal/LocalTFunction.tu",
-        Opcodes in "Opcodes.tu", ReflectionFactory in "internal/util/ReflectionFactory.tu"
+    import TClass in "TClass.tu",
+        LocalTClass in "internal/LocalTClass.tu",
+        TFunction in "TFunction.tu",
+        LocalTFunction in "internal/LocalTFunction.tu",
+        Opcodes in "Opcodes.tu",
+        ReflectionFactory in "internal/util/ReflectionFactory.tu"
     export ~.*reflectc, ~.*reflectf
     
     

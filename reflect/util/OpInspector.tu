@@ -1,30 +1,13 @@
 unit
 class OpInspector
-    export construct, hasNext, next, count, position
+    import Opcodes in "%oot/reflect/Opcodes.tu"
+    export hasNext, next, count, position
     
-    var firstOp, lastOp, currOp: addressint
+    deferred fcn hasNext(): boolean
     
-    proc construct(__firstOp, __lastOp: nat)
-        firstOp := __firstOp; lastOp := __lastOp;
-        currOp := firstOp
-    end construct
+    deferred fcn next(): unchecked ^Opcodes.TYPE
     
-    fcn hasNext(): boolean
-        result currOp ~= lastOp+4
-    end hasNext
+    deferred fcn count(): nat
     
-    fcn next(): unchecked ^nat
-        var resultPtr: unchecked ^nat
-        #resultPtr := currOp
-        currOp += 4
-        result resultPtr
-    end next
-    
-    fcn count(): nat
-        result 1+(lastOp - firstOp) div 4
-    end count
-    
-    fcn position(): nat
-        result count() - (lastOp+4 - currOp) div 4
-    end position
+    deferred fcn position(): nat
 end OpInspector

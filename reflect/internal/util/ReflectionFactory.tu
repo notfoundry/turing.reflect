@@ -2,23 +2,23 @@ unit
 module ReflectionFactory
     import Opcodes in "%oot/reflect/Opcodes.tu",
             FunctionContext in "%oot/reflect/context/FunctionContext.tu",
-            ClassContext in "%oot/reflect/context/ClassContext.tu"
+            DeclaredFunctionContext in "%oot/reflect/internal/context/DeclaredFunctionContext.tu",
+            ClassContext in "%oot/reflect/context/ClassContext.tu",
+            DeclaredClassContext in "%oot/reflect/internal/context/DeclaredClassContext.tu"
     export makeFunctionContext, makeClassContext
     
-    const OP_SIZE := 4
-    
     fcn isFunctionEnd(address: addressint): boolean
-        var op := nat @ (address)
+        var op: Opcodes.TYPE := Opcodes.TYPE @ (address)
         case (op) of
-        label Opcodes.RETURN:
-            if (nat @ (address-OP_SIZE*2) = Opcodes.SETLINENO
-                    | nat @ (address-OP_SIZE*3) = Opcodes.SETFILENO
-                    | nat @ (address-OP_SIZE) = Opcodes.INCLINENO
-                    | nat @ (address-OP_SIZE) = Opcodes.DEALLOCFLEXARRAY) then
+        label RETURN:
+            if (Opcodes.TYPE @ (address-Opcodes.OP_SIZE*2) = SETLINENO
+                    | Opcodes.TYPE @ (address-Opcodes.OP_SIZE*3) = SETFILENO
+                    | Opcodes.TYPE @ (address-Opcodes.OP_SIZE) = INCLINENO
+                    | Opcodes.TYPE @ (address-Opcodes.OP_SIZE) = DEALLOCFLEXARRAY) then
                 result true
             end if
-        label Opcodes.ADDSET:
-            if (nat @ (address-OP_SIZE) = Opcodes.ABORT) then
+        label ADDSET:
+            if (Opcodes.TYPE @ (address-Opcodes.OP_SIZE) = ABORT) then
                 result true
             end if
         label:
@@ -27,8 +27,8 @@ module ReflectionFactory
     end isFunctionEnd
     
     fcn isHandlerFunctionEnd(address: addressint): boolean
-        if (nat @ (address) = Opcodes.RETURN
-                & nat @ (address-OP_SIZE) = Opcodes.UNLINKHANDLER) then
+        if (Opcodes.TYPE @ (address) = RETURN
+                & Opcodes.TYPE @ (address-Opcodes.OP_SIZE) = UNLINKHANDLER) then
             result true
         end if
         result false
@@ -39,19 +39,19 @@ module ReflectionFactory
         if (isClass) then
             returnDef := 4
         end if
-        if (nat @ (address) = Opcodes.LOCATEPARM
-            & nat @ (address+OP_SIZE) = returnDef
-            & nat @ (address+OP_SIZE*2) = Opcodes.FETCHADDR) then
+        if (Opcodes.TYPE @ (address) = LOCATEPARM
+            & Opcodes.TYPE @ (address+Opcodes.OP_SIZE) = returnDef
+            & Opcodes.TYPE @ (address+Opcodes.OP_SIZE*2) = FETCHADDR) then
             result true
         end if
         result false
     end isFunction
     
     fcn isClassEnd(address: addressint): boolean
-        var op := nat @ (address)
+        var op := Opcodes.TYPE @ (address)
         case (op) of
-        label Opcodes.RETURN:
-            if (nat @ (address-OP_SIZE) = Opcodes.ASNADDR) then result true
+        label RETURN:
+            if (Opcodes.TYPE @ (address-Opcodes.OP_SIZE) = ASNADDR) then result true
             end if
         label:
         end case
@@ -66,11 +66,11 @@ module ReflectionFactory
         var lineCount: nat := 1
         var opCount: nat := 0
         
-        if (nat @ (procedureAddr + OP_SIZE*6) = Opcodes.BEGINHANDLER) then
+        if (Opcodes.TYPE @ (procedureAddr + Opcodes.OP_SIZE*6) = BEGINHANDLER) then
             hasHandler := true
         end if
         loop
-            var op := nat @ (curr)
+            var op: Opcodes.TYPE := Opcodes.TYPE @ (curr)
             exit when foundEndAddress
             if ((hasHandler
                     & ~foundEndAddress
@@ -86,15 +86,15 @@ module ReflectionFactory
                 isFunc := true
                 foundFunc := true
             end if
-            if (op = Opcodes.INCLINENO) then
+            if (op = INCLINENO) then
                 lineCount += 1
             end if
             opCount += 1
-            curr += OP_SIZE
+            curr += Opcodes.OP_SIZE
         end loop
         
-        var context: ^FunctionContext
-        new context; context -> construct(procedureAddr, endAddress, isFunc, internal, lineCount, nat @ (procedureAddr+OP_SIZE), opCount);
+        var context: ^DeclaredFunctionContext
+        new context; context -> construct(procedureAddr, endAddress, isFunc, internal, lineCount, Opcodes.TYPE @ (procedureAddr+Opcodes.OP_SIZE), opCount);
         result context
     end makeFunctionContext
     
@@ -106,20 +106,20 @@ module ReflectionFactory
         var lineCount: nat := 1
         var opCount: nat := 0
         loop
-            var op := nat @ (curr)
+            var op := Opcodes.TYPE @ (curr)
             exit when foundEndAddress
             if (~foundEndAddress & isClassEnd(curr)) then
                 endAddress := curr
                 foundEndAddress := true
             end if
-            if (op = Opcodes.INCLINENO) then
+            if (op = INCLINENO) then
                 lineCount += 1
             end if
             opCount += 1
-            curr += OP_SIZE
+            curr += Opcodes.OP_SIZE
         end loop
         
-        var context: ^ClassContext
+        var context: ^DeclaredClassContext
         new context; context -> construct(classAddr, endAddress, lineCount, opCount);
         result context
     end makeClassContext
