@@ -2,10 +2,10 @@
 
 ###What is it?
 turing.reflect provides an API for reflectively accessing and modifying classes, functions, and procedures in the Turing runtime.
-This is done by manipulating the Turing interpreter to load custom-generated instructions onto its program counter, giving turing.reflect the ability to perform the internal interpreter operations necessary for reflection.
+This is done by manipulating the Turing interpreter to execute custom-generated instructions, giving turing.reflect the ability to perform certain internal interpreter operations necessary for reflection.
 
 ###How does it work?
-The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder to the upper-level *support* directory of your Turing interpreter. The folder tree should look like *%install directory%/support/reflect*.
+The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder to the upper-level *support* directory of your Turing interpreter. The folder tree should look like *%install directory%/support/reflect/*.
 Once that is complete, you can import turing.reflect into your project by inserting this line into a source file header
 > import "%oot/reflect/universe"
 
@@ -39,8 +39,54 @@ If we wanted to invoke that *greetMe* procedure directly, we could also do it wi
 
 The code above will find the first declared procedure in the class above and invoke it with both an instance address of *nil* and a return address of 0. If *greetMe* returned a value, the return address would be the location in memory for the result to be put. Furthermore, if *greetMe* relied on any instance fields in *MyClass*, the instance address would specify the instance to use for that invocation.
 
-###N-arity invocation
-To invoke functions that take arguments of some kind, **TFunction**'s *invoke* function cannot be used. Instead, *TFunction* defines a separate function *invokeArgs* to accomplish this. Similar to *invoke*, you pass arguments defining the function return address and class instance address to use for the invocation (these are ignored if the function has no return value or is not in a class, respectively).
+###Working with Annotations
+A common use of reflection is retrieving metadata associated with specific code constructs in projects. Java and C# do this through the use of *annotations* and *attributes* respectively, but they both boil down to being small snippets of code that can be put next to code constructs to give them certain metadata.
+
+The Turing language does not support these kinds of constructs out of the box, but turing.reflect supplements this shortcoming by allowing you to define custom annotations that can be applied to various parts of your code. To do this, we first have to include the **invoke** module by adding the following snippet to the import line of your file header
+> "%oot/reflect/annotations"
+
+From there, you can create annotations by putting the word *annotation* before a declared empty procedure
+```scala
+  annotation proc test
+  end test
+  
+  annotation proc named(name: string)
+  end named
+```
+
+Both *test* and *named* can now be scanned for as annotations by turing.reflect's reflective objects. In this example
+```scala
+class TestSuite
+  test
+  proc testDoingSomething()
+  
+  end testDoingSomething
+  
+  test
+  named ("test for doing something else")
+  proc testDoingSomethingElse()
+  
+  end testDoingSomethingElse
+end TestSuite
+```
+
+we can scan the TestSuite class for all functions annotated with *test*, and print the names of all those functions also annotated as *named*
+```scala
+  const clazz := reflectc(TestSuite)
+  
+  for i: 1..clazz -> getFunctionCount()
+    const annotations := clazz -> getFunction(i) -> getAnnotations()
+    if (annotations -> isAnnotationPresent(test) & annotations -> isAnnotationPresent(named)) then
+      const name := annotations -> getAnnotation(named)
+      put string @ (name -> getElement(1))  /* prints "test for doing something else" */
+    end if
+  end for
+```
+
+The annotation reflection API also allows you enumerate all annotations present on any given code construct, along with the number of elements that annotation has.
+
+###Invoking functions with arguments reflectively
+To invoke functions that take arguments of some kind, **TFunction**'s *invoke* function isn't good enough. Instead, *TFunction* defines a separate function *invokeArgs* to accomplish this. Similar to *invoke*, you pass arguments defining the function return address and class instance address to use for the invocation (these are ignored if the function has no return value or is not in a class, respectively).
 Take the example of this greeting function
 ```scala
 fcn deliverGreeting(greeting: string, recipient: string, allCaps: boolean, repetitions: int): string
@@ -56,10 +102,10 @@ fcn deliverGreeting(greeting: string, recipient: string, allCaps: boolean, repet
 end deliverGreeting
 ```
 
-to invoke this, we first have to include the **invoke** module. This is accomplished by adding the following line to your file header
-> import "%oot/reflect/universe", "%oot/reflect/invoke"
+To invoke this, we first have to include the **invoke** module by adding the following snippet to the import line of your file header
+> "%oot/reflect/invoke"
 
-from there, invoking the function is simple
+From there, invoking the function is simple
 
 ```scala
 var greeting: string
@@ -82,6 +128,7 @@ turing.reflect is composed of **contextual** and **pervasive** operations.
 Contextutal operations are actions that can be done without modifying the underlying opcodes from which constructs such as functions and classes are comprised, such as
   * class instance creation
   * class assignability checks
+  * annotation creation, placement and retrieval
   * function invocation
   * function return value type resolution
   * function argument type resolution
