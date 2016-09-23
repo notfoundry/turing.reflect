@@ -1,7 +1,7 @@
 ##A code introspection and reflection framework for the Turing interpreter
 
 ###What is it?
-turing.reflect provides an API for reflectively accessing and modifying classes, functions, and procedures in the Turing runtime.
+turing.reflect provides an API for reflectively accessing and analyzing classes, functions, and fields in the Turing runtime.
 This is done by manipulating the Turing interpreter to execute custom-generated instructions, giving turing.reflect the ability to perform certain internal interpreter operations necessary for reflection.
 
 ###How does it work?
