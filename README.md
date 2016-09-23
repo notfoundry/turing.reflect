@@ -42,7 +42,7 @@ The code above will find the first declared procedure in the class above and inv
 ###Working with Annotations
 A common use of reflection is retrieving metadata associated with specific code constructs in projects. Java and C# do this through the use of *annotations* and *attributes* respectively, but they both boil down to being small snippets of code that can be put next to code constructs to give them certain metadata.
 
-The Turing language does not support these kinds of constructs out of the box, but turing.reflect supplements this shortcoming by allowing you to define custom annotations that can be applied to various parts of your code. To do this, we first have to include the **invoke** module by adding the following snippet to the import line of your file header
+The Turing language does not support these kinds of constructs out of the box, but turing.reflect supplements this shortcoming by allowing you to define custom annotations that can be applied to various parts of your code. To do this, we first have to include the **annotations** module by adding the following snippet to the import line of your file header
 > "%oot/reflect/annotations"
 
 From there, you can create annotations by putting the word *annotation* before a declared empty procedure
