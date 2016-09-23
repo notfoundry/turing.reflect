@@ -86,10 +86,10 @@ class LocalTClass
     end getFunctionCount
     
     body fcn getFunction(fcnNumber: nat): unchecked ^TFunction
-        if (~Conditions.hasNat(functionCount)) then
-            const count := getFunctionCount()
-            new declaredFunctions, count
-            
+        const count := getFunctionCount()
+        
+        if (upper(declaredFunctions) ~= functionCount) then
+            new declaredFunctions, functionCount
             for i: 1..count
                 declaredFunctions(i) := nil
             end for
@@ -102,7 +102,7 @@ class LocalTClass
         elsif (fcnNumber = 0) then
             Error.Halt("Class function access is one-indexed, function 0 cannot be accessed")
         end if
-        
+
         if (~Conditions.isValid(declaredFunctions(fcnNumber))) then
             var resultFunc: ^ClassTFunction
             new resultFunc; resultFunc -> construct(ReflectionFactory.makeFunctionContext(functionDeclarationSites(fcnNumber), true));

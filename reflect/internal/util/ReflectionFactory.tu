@@ -27,17 +27,14 @@ module ReflectionFactory
     end isFunctionEnd
     
     fcn isHandlerFunctionEnd(address: addressint): boolean
-        if (Opcodes.TYPE @ (address) = RETURN
-                & Opcodes.TYPE @ (address-Opcodes.OP_SIZE) = UNLINKHANDLER) then
-            result true
-        end if
-        result false
+        result Opcodes.TYPE @ (address) = RETURN
+                & Opcodes.TYPE @ (address-Opcodes.OP_SIZE) = UNLINKHANDLER
     end isHandlerFunctionEnd
     
     fcn isFunction(address: addressint, isClass: boolean): boolean
         var returnDef := 0
         if (isClass) then
-            returnDef := 4
+            returnDef := Opcodes.OP_SIZE
         end if
         if (Opcodes.TYPE @ (address) = LOCATEPARM
             & Opcodes.TYPE @ (address+Opcodes.OP_SIZE) = returnDef

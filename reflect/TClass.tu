@@ -2,9 +2,10 @@ unit
 class TClass
     inherit CodeConstruct in "CodeConstruct.tu"
     import TFunction in "TFunction.tu",
+        TField in "TField.tu",
         OpInspector in "util/OpInspector.tu",
         ClassContext in "context/ClassContext.tu"
-    export TYPE, newInstance, getDescriptor, getSuperclass, getContext, getFunction, getName, getObjectSize, getFunctionCount
+    export TYPE, newInstance, getDescriptor, getSuperclass, getContext, getFunction, getName, getObjectSize, getFunctionCount, getField, getFieldCount
     
     type TYPE:
         record
@@ -29,12 +30,16 @@ class TClass
     
     deferred fcn getFunction(fcnNumber: nat): unchecked ^TFunction
     
+    deferred fcn getFunctionCount(): nat
+    
+    deferred fcn getField(fieldNumber: nat): unchecked ^TField
+    
+    deferred fcn getFieldCount(): nat
+    
     deferred fcn getObjectSize(): nat
     body fcn getObjectSize(): nat
         result getDescriptor().objSize
     end getObjectSize
-    
-    deferred fcn getFunctionCount(): nat
     
     body fcn toString(): string
         result "class " + getName()

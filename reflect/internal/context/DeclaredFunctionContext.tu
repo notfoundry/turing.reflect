@@ -24,6 +24,22 @@ class DeclaredFunctionContext
         opCount := __opCount
     end construct
     
+    body fcn getStartAddress(): addressint
+        result startAddress
+    end getStartAddress
+    
+    body fcn getEndAddress(): addressint
+        result endAddress
+    end getEndAddress
+    
+    body fcn getSourceLength(): nat
+        result sourceLength
+    end getSourceLength
+    
+    body fcn getOpCount(): nat
+        result opCount
+    end getOpCount
+    
     body fcn isFunction(): boolean
         result isFunc
     end isFunction
