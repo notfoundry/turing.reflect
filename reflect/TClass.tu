@@ -1,11 +1,11 @@
 unit
 class TClass
-    inherit CodeConstruct in "CodeConstruct.tu"
+    inherit AnnotatedElement in "annotation/AnnotatedElement.tu"
     import TFunction in "TFunction.tu",
         TField in "TField.tu",
         OpInspector in "util/OpInspector.tu",
         ClassContext in "context/ClassContext.tu"
-    export TYPE, newInstance, getDescriptor, getSuperclass, getContext, getFunction, getName, getObjectSize, getFunctionCount, getField, getFieldCount
+    export TYPE, inspect, newInstance, getDescriptor, getSuperclass, getContext, getFunction, getName, getObjectSize, getFunctionCount, getField, getFieldCount, getDeclaredFunction, getDeclaredFunctionCount, getDeclaredField, getDeclaredFieldCount
     
     type TYPE:
         record
@@ -18,6 +18,8 @@ class TClass
             numOperations: nat4
         end record
     
+    deferred fcn inspect(): unchecked ^OpInspector
+    
     deferred fcn getName(): string
     
     deferred fcn newInstance(): unchecked ^anyclass
@@ -28,13 +30,24 @@ class TClass
     
     deferred fcn getContext(): unchecked ^ClassContext
     
+    
     deferred fcn getFunction(fcnNumber: nat): unchecked ^TFunction
+    
+    deferred fcn getDeclaredFunction(fcnNumber: nat): unchecked ^TFunction
     
     deferred fcn getFunctionCount(): nat
     
+    deferred fcn getDeclaredFunctionCount(): nat
+    
+    
     deferred fcn getField(fieldNumber: nat): unchecked ^TField
     
+    deferred fcn getDeclaredField(fieldNumber: nat): unchecked ^TField
+    
     deferred fcn getFieldCount(): nat
+    
+    deferred fcn getDeclaredFieldCount(): nat
+    
     
     deferred fcn getObjectSize(): nat
     body fcn getObjectSize(): nat
@@ -46,7 +59,7 @@ class TClass
     end toString
     
     body fcn equals(o: ^Object): boolean
-        if (o ~= nil & objectclass(self) = objectclass(o)) then
+        if (o ~= nil & objectclass(o) >= objectclass(self)) then
             result getDescriptor().baseClass = TClass(o).getDescriptor().baseClass
         else result false
         end if

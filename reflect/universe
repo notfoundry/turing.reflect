@@ -8,7 +8,6 @@ module *Universe
         ReflectionFactory in "internal/util/ReflectionFactory.tu"
     export ~.*reflectc, ~.*reflectf
     
-    
     fcn reflectc(o: cheat addressint): unchecked ^TClass
         type __anyclass: unchecked ^anyclass
         var resultClass: ^LocalTClass
@@ -22,4 +21,5 @@ module *Universe
         new resultFunc; resultFunc -> construct(ReflectionFactory.makeFunctionContext(o, false));
         result resultFunc
     end reflectf
+
 end Universe

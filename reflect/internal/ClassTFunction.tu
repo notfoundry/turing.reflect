@@ -38,7 +38,7 @@ class ClassTFunction
             )
             var instref := instance
             ops(4) := addr(instref)
-            ops(6) := fetch()
+            ops(6) := getContext() -> getStartAddress()
             cheat(__procedure, addr(ops))()
         end if
     end invoke

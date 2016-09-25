@@ -3,7 +3,8 @@ module Primitives
     export TYPE,
         INT, INT1, INT2, INT4,
         NAT, NAT1, NAT2, NAT4,
-        STRING,
+        STRING, BOOLEAN,
+        FLEXIBLE_ARRAY,
         CHECKED_PTR, UNCHECKED_PTR,
         REAL, REAL4, REAL8,
         NONSCALAR, VOID,
@@ -12,7 +13,8 @@ module Primitives
     type TYPE: enum (
         INT, INT1, INT2, INT4,
         NAT, NAT1, NAT2, NAT4,
-        STRING,
+        STRING, BOOLEAN,
+        FLEXIBLE_ARRAY,
         CHECKED_PTR, UNCHECKED_PTR,
         REAL, REAL4, REAL8,
         NONSCALAR, VOID
@@ -35,7 +37,11 @@ module Primitives
     const NAT4 := TYPE.NAT4
 
     const STRING := TYPE.STRING
-
+    
+    const BOOLEAN := TYPE.BOOLEAN
+    
+    const FLEXIBLE_ARRAY := TYPE.FLEXIBLE_ARRAY
+    
     const CHECKED_PTR := TYPE.CHECKED_PTR
     
     const UNCHECKED_PTR := TYPE.UNCHECKED_PTR

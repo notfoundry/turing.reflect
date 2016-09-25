@@ -19,9 +19,9 @@ class ConstructedTFunction
         context := ReflectionFactory.makeFunctionContext(addr(opcodes), false)
     end construct
     
-    body fcn fetch(): addressint
-        result addr(opcodes(1))
-    end fetch
+    body fcn getContext(): unchecked ^FunctionContext
+        result context
+    end getContext
     
     body fcn inspect(): unchecked ^OpInspector
         var resultInspector: ^DefinedOpInspector

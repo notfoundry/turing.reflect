@@ -2,10 +2,19 @@ unit
 module OpcodeHelper
     import Opcodes in "%oot/reflect/Opcodes.tu",
         Primitives in "%oot/reflect/Primitives.tu"
-    export isStackPushingOp, isDereferencingOp, returnTypeFromMergeOp, returnTypeFromStackPushingOp, wrapValuePushedToStack
+    export isStackPushingOp, isDereferencingOp, isInitializationOp, returnTypeFromMergeOp, returnTypeFromStackPushingOp, returnTypeFromInitializationOp, wrapValuePushedToStack, isNotOperand
     
     var ZERO := 0
+    
     var ONE := 1
+    
+    fcn opBoundErrorMessage(op: Opcodes.TYPE): string
+        result natstr(op) + " is not a valid opcode: opcodes are between " + natstr(Opcodes.MIN_OP) + " and " + natstr(Opcodes.MAX_OP)
+    end opBoundErrorMessage
+    
+    fcn isInitializationOp(op: Opcodes.TYPE): boolean
+        result op >= UNINIT & op <= UNINITSTR
+    end isInitializationOp
     
     fcn isStackPushingOp(op: Opcodes.TYPE): boolean
         result op >= PUSHADDR & op <= PUSHVAL1
@@ -37,6 +46,10 @@ module OpcodeHelper
             label ASNREAL4INV: result Primitives.REAL4
             label ASNREAL8INV: result Primitives.REAL8
             label ASNSTRINV: result Primitives.STRING
+            label: 
+                if (op > Opcodes.MAX_OP) then Error.Halt(opBoundErrorMessage(op))
+                else Error.Halt(Opcodes.nameOf(op) + " is not a pointer-dereferencing merge opcode")
+                end if
         end case
     end returnTypeFromMergeOp
     
@@ -50,8 +63,28 @@ module OpcodeHelper
             label PUSHREAL: result Primitives.REAL
             label PUSHVAL0: result Primitives.INT
             label PUSHVAL1: result Primitives.INT
+            label:
+                if (op > Opcodes.MAX_OP) then Error.Halt(opBoundErrorMessage(op))
+                else Error.Halt(Opcodes.nameOf(op) + " is not a stack pushing opcode")
+                end if
         end case
     end returnTypeFromStackPushingOp
+    
+    fcn returnTypeFromInitializationOp(op: Opcodes.TYPE): Primitives.TYPE
+        case (op) of
+            label UNINIT: result Primitives.NONSCALAR
+            label UNINITADDR: result Primitives.UNCHECKED_PTR
+            label UNINITBOOLEAN: result Primitives.INT1
+            label UNINITINT: result Primitives.INT
+            label UNINITNAT: result Primitives.NAT
+            label UNINITREAL: result Primitives.REAL
+            label UNINITSTR: result Primitives.NONSCALAR
+            label: 
+                if (op > Opcodes.MAX_OP) then Error.Halt(opBoundErrorMessage(op))
+                else Error.Halt(Opcodes.nameOf(op) + " is not a memory initialization opcode")
+                end if
+        end case
+    end returnTypeFromInitializationOp
     
     fcn wrapValuePushedToStack(opAddress: addressint): addressint
         case (Opcodes.TYPE @ (opAddress)) of
@@ -66,4 +99,14 @@ module OpcodeHelper
             label: Error.Halt(natstr(opAddress) + " does not point to a stack-pushing opcode")
         end case
     end wrapValuePushedToStack
+    
+    fcn isNotOperand(opAddress: addressint): boolean
+        for i: 1..Opcodes.MAX_OPERAND_COUNT
+            const currAddress := opAddress - Opcodes.OP_SIZE * i
+            if (Opcodes.TYPE @ (currAddress) >= Opcodes.MIN_OP & Opcodes.TYPE @ (currAddress) <= Opcodes.MAX_OP & isNotOperand(currAddress)) then
+                put Opcodes.TYPE @ (currAddress)
+            end if
+        end for
+        result true
+    end isNotOperand
 end OpcodeHelper

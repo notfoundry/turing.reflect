@@ -7,23 +7,21 @@ class LocalTFunction
         Primitives in "%oot/reflect/Primitives.tu",
         ReflectionFactory in "util/ReflectionFactory.tu",
         MutableTypeClassifier in "%oot/reflect/internal/MutableTypeClassifier.tu",
-        AnnotatedFunctionElement in "annotation/AnnotatedFunctionElement.tu",
-        MutableInvocationContext in "invocation/MutableInvocationContext.tu"
+        AnnotationManifest in "annotation/AnnotationManifest.tu",
+        AnnotationFactory in "annotation/AnnotationFactory.tu",
+        MutableInvocationContext in "invocation/MutableInvocationContext.tu",
+        MutableRepeatedAnnotation in "annotation/MutableRepeatedAnnotation.tu"
     export construct
     
     var context: unchecked ^FunctionContext
     
-    var annotations: unchecked ^AnnotatedElement := nil
+    var annotations: unchecked ^AnnotationManifest := nil
     
     var returnType: unchecked ^TypeClassifier := nil
     
     proc construct(functionContext: unchecked ^FunctionContext)
         context := functionContext
     end construct
-    
-    body fcn fetch(): addressint
-        result context -> getStartAddress()
-    end fetch
     
     body fcn getContext(): unchecked ^FunctionContext
         result context
@@ -41,18 +39,64 @@ class LocalTFunction
         result resultContext
     end invokeArgs
     
-    body fcn getAnnotations(): unchecked ^AnnotatedElement
+    body fcn getDeclaredAnnotationCount(): nat
         if (annotations = nil) then
-            var resultElement: ^AnnotatedFunctionElement
-            new resultElement; resultElement -> construct(getContext());
-            annotations := resultElement
+            annotations := AnnotationFactory.getFunctionAnnotations(self)
         end if
-        result annotations
+        result annotations -> getAnnotationCount()
+    end getDeclaredAnnotationCount
+    
+    body fcn getAnnotationCount(): nat
+        result getDeclaredAnnotationCount()
+    end getAnnotationCount
+    
+    body fcn getDeclaredAnnotationAt(position: nat): unchecked ^Annotation
+        const count := getDeclaredAnnotationCount()
+        if (position > count) then
+            Error.Halt("Tried to access annotation #" + natstr(position)
+                + ", but this construct only has " + natstr(count) + " annotations")
+        elsif (position = 0) then
+            Error.Halt("Function annotation access is one-indexed, annotation 0 cannot be accessed")
+        end if
+        
+        result annotations -> getAnnotation(position)
+    end getDeclaredAnnotationAt
+    
+    body fcn getAnnotationAt(position: nat): unchecked ^Annotation
+        result getDeclaredAnnotationAt(position)
+    end getAnnotationAt
+    
+    body fcn getDeclaredAnnotation(annotationType: cheat addressint): unchecked ^Annotation
+        for i: 1..getDeclaredAnnotationCount()
+            const lookup := annotations -> getAnnotation(i)
+            if (lookup -> isInstance(annotationType)) then
+                result lookup
+            end if
+        end for
+        result nil
+    end getDeclaredAnnotation
+    
+    body fcn getAnnotation(annotationType: cheat addressint): unchecked ^Annotation
+        result getDeclaredAnnotation(annotationType)
+    end getAnnotation
+    
+    body fcn getDeclaredAnnotations(annotationType: cheat addressint): unchecked ^RepeatedAnnotation
+        var resultAnnotations: ^MutableRepeatedAnnotation; new resultAnnotations;
+        for i: 1..getDeclaredAnnotationCount()
+            const lookup := annotations -> getAnnotation(i)
+            if (lookup -> isInstance(annotationType)) then
+                resultAnnotations -> addAnnotation(lookup)
+            end if
+        end for
+        result resultAnnotations
+    end getDeclaredAnnotations
+    
+    body fcn getAnnotations(annotationType: cheat addressint): unchecked ^RepeatedAnnotation
+        result getDeclaredAnnotations(annotationType)
     end getAnnotations
     
     body proc invoke(returnAddr: addressint, instance: unchecked ^anyclass)
         type __procedure: proc x()
-
         if (context -> isFunction()) then
             var tmp: array 1..* of nat := init(
                 PROC, 0,

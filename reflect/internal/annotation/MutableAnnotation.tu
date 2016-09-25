@@ -3,7 +3,7 @@ class MutableAnnotation
     inherit Annotation in "%oot/reflect/annotation/Annotation.tu"
     import Opcodes in "%oot/reflect/Opcodes.tu",
         OpcodeHelper in "%oot/reflect/internal/util/OpcodeHelper.tu"
-    export construct, isInstance
+    export construct
     
     var annotationAddress: addressint
 
@@ -58,7 +58,7 @@ class MutableAnnotation
         end if
     end getElement
     
-    fcn isInstance(annotationType: cheat addressint): boolean
+    body fcn isInstance(annotationType: cheat addressint): boolean
         result annotationType = annotationAddress
     end isInstance
     

@@ -1,15 +1,15 @@
 unit
 class TFunction
-    inherit CodeConstruct in "CodeConstruct.tu"
+    inherit AnnotatedElement in "annotation/AnnotatedElement.tu"
     import OpInspector in "util/OpInspector.tu",
         InvocationContext in "invocation/InvocationContext.tu",
         FunctionContext in "context/FunctionContext.tu",
         TypeClassifier in "TypeClassifier.tu",
         AnnotatedElement in "annotation/AnnotatedElement.tu"
-    export fetch, invoke, invokeArgs, getContext, getReturnType, getAnnotations
+    export inspect, invoke, invokeArgs, getContext, getReturnType
     
-    deferred fcn fetch(): addressint
-    
+    deferred fcn inspect(): unchecked ^OpInspector
+
     deferred fcn getContext(): unchecked ^FunctionContext
     
     deferred proc invoke(returnAddr: addressint, instance: unchecked ^anyclass)
@@ -18,11 +18,9 @@ class TFunction
     
     deferred fcn getReturnType(): unchecked ^TypeClassifier
     
-    deferred fcn getAnnotations(): unchecked ^AnnotatedElement
-    
     body fcn equals(o: ^Object): boolean
         if (o ~= nil & objectclass(self) = objectclass(o)) then
-            result fetch() = TFunction(o).fetch()
+            result getContext() -> getStartAddress() = TFunction(o).getContext() -> getStartAddress()
         else result false
         end if
     end equals

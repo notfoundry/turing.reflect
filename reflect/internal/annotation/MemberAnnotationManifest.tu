@@ -1,14 +1,17 @@
 unit
-class AnnotatedFunctionElement
-    inherit AnnotatedElement in "%oot/reflect/annotation/AnnotatedElement.tu"
+class MemberAnnotationManifest
+    inherit AnnotationManifest in "AnnotationManifest.tu"
     import FunctionContext in "%oot/reflect/context/FunctionContext.tu",
+        Annotation in "%oot/reflect/annotation/Annotation.tu",
         MutableAnnotation in "MutableAnnotation.tu",
         OpInspector in "%oot/reflect/util/OpInspector.tu",
         Opcodes in "%oot/reflect/Opcodes.tu",
         Annotations in "%oot/reflect/annotations"
     export construct
-
-    var annotations: flexible array 1..0 of unchecked ^MutableAnnotation
+    
+    const NONEXISTENT_FUNCTION := 0
+    
+    var annotations: flexible array 1..0 of unchecked ^Annotation
     
     fcn getCalledFunction(callOpAddress: addressint): addressint
         var op := callOpAddress
@@ -34,12 +37,15 @@ class AnnotatedFunctionElement
     
     fcn isAnnotationProcedure(address: addressint): boolean
         var op := address - Opcodes.OP_SIZE
+        if (op = NONEXISTENT_FUNCTION) then result false
+        end if
         loop
             case (Opcodes.TYPE @ (op)) of
                 label Opcodes.CALL:
                     op := getCalledFunction(op)
                     if (op = #annotation) then result true
-                    else result isAnnotationProcedure(op)
+                    else 
+                        result isAnnotationProcedure(op)
                     end if
                 label Opcodes.PROC, Opcodes.RETURN:
                     result false
@@ -49,8 +55,8 @@ class AnnotatedFunctionElement
         end loop
     end isAnnotationProcedure
     
-    proc construct(context: unchecked ^FunctionContext)
-        var op := context -> getStartAddress() - Opcodes.OP_SIZE
+    proc construct(constructAddress: addressint)
+        var op := constructAddress - Opcodes.OP_SIZE
         loop
             case (Opcodes.TYPE @ (op)) of
                 label Opcodes.CALL:
@@ -64,7 +70,7 @@ class AnnotatedFunctionElement
                     else
                         exit
                     end if
-                label Opcodes.PROC, Opcodes.RETURN:
+                label Opcodes.PROC, Opcodes.RETURN, Opcodes.LOCATECLASS:
                     exit
                 label:
             end case
@@ -76,22 +82,7 @@ class AnnotatedFunctionElement
         result upper(annotations)
     end getAnnotationCount
     
-    body fcn getAnnotationAt(position: nat): unchecked ^Annotation
-        if (position > upper(annotations)) then
-            Error.Halt("attempted to access annotation at position " + natstr(position)
-                + ", but only " + intstr(upper(annotations)) + " annotations exist")
-        else
-            result annotations(position)
-        end if
-    end getAnnotationAt
-    
-    body fcn getAnnotation(annotationType: cheat addressint): unchecked ^Annotation
-        for i: lower(annotations)..upper(annotations)
-            if (annotations(i) -> isInstance(annotationType)) then
-                result annotations(i)
-            end if
-        end for
-        result nil
+    body fcn getAnnotation(position: nat): unchecked ^Annotation
+        result annotations(position)
     end getAnnotation
-    
-end AnnotatedFunctionElement
+end MemberAnnotationManifest
