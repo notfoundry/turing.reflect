@@ -2,7 +2,7 @@
 
 ###What is it?
 turing.reflect provides an API for reflectively accessing and analyzing classes, functions, and fields in the Turing runtime.
-This is done by manipulating the Turing interpreter to execute custom-generated instructions, giving turing.reflect the ability to perform certain internal interpreter operations necessary for reflection.
+This is done by analyzing the internal representations of running code to reconstruct what its source-level equivalent would be, along with manipulating the interpreter to run certain dynamically-generated instructions that would otherwise be unable to exist.
 
 ###How does it work?
 The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder to the upper-level *support* directory of your Turing interpreter. The folder tree should look like *%install directory%/support/reflect/*.
@@ -77,7 +77,7 @@ we can scan the TestSuite class for all functions annotated with *test*, and pri
   for i: 1..clazz -> getFunctionCount()
     const func := clazz -> getFunction(i)
     if (func -> isAnnotationPresent(test) & func -> isAnnotationPresent(named)) then
-      const annotation := func -> getDeclaredAnnotation(named)
+      const name := func -> getDeclaredAnnotation(named)
       put string @ (name -> getElement(1))  /* prints "test for doing something else" */
     end if
   end for
