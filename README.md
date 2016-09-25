@@ -75,9 +75,9 @@ we can scan the TestSuite class for all functions annotated with *test*, and pri
   const clazz := reflectc(TestSuite)
   
   for i: 1..clazz -> getFunctionCount()
-    const annotations := clazz -> getFunction(i) -> getAnnotations()
-    if (annotations -> isAnnotationPresent(test) & annotations -> isAnnotationPresent(named)) then
-      const name := annotations -> getAnnotation(named)
+    const func := clazz -> getFunction(i)
+    if (func -> isAnnotationPresent(test) & func -> isAnnotationPresent(named)) then
+      const annotation := func -> getDeclaredAnnotation(named)
       put string @ (name -> getElement(1))  /* prints "test for doing something else" */
     end if
   end for
