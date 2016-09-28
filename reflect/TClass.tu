@@ -5,7 +5,7 @@ class TClass
         TField in "TField.tu",
         OpInspector in "util/OpInspector.tu",
         ClassContext in "context/ClassContext.tu"
-    export TYPE, inspect, newInstance, getDescriptor, getSuperclass, getContext, getFunction, getName, getObjectSize, getFunctionCount, getField, getFieldCount, getDeclaredFunction, getDeclaredFunctionCount, getDeclaredField, getDeclaredFieldCount
+    export TYPE, inspect, newInstance, getDescriptor, getSuperclass, getContext, getFunction, getName, getObjectSize, getFunctionCount, getField, getFieldCount, getDeclaredFunction, getDeclaredFunctionCount, getDeclaredField, getDeclaredFieldCount, isAssignableFrom, isInstance
     
     type TYPE:
         record
@@ -47,6 +47,11 @@ class TClass
     deferred fcn getFieldCount(): nat
     
     deferred fcn getDeclaredFieldCount(): nat
+    
+    
+    deferred fcn isAssignableFrom(clazz: unchecked ^TClass): boolean
+    
+    deferred fcn isInstance(obj: unchecked ^anyclass): boolean
     
     
     deferred fcn getObjectSize(): nat

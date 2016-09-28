@@ -289,4 +289,32 @@ class LocalTClass
         result resultAnnotations
     end getAnnotations
     
+    body fcn isAssignableFrom(clazz: unchecked ^TClass): boolean
+        const classLookup := getDescriptor().baseClass
+        var currentClass := clazz
+        loop
+            exit when currentClass = nil
+            if (currentClass -> getDescriptor().baseClass = classLookup) then
+                result true
+            end if
+            currentClass := currentClass -> getSuperclass()
+        end loop
+        result false
+    end isAssignableFrom
+    
+    body fcn isInstance(obj: unchecked ^anyclass): boolean
+        const classLookup := getDescriptor().baseClass
+        var currentClass := cheat(TYPE, objectclass(obj))
+        loop
+            exit when currentClass.baseClass = 0
+            if (currentClass.baseClass = classLookup) then
+                result true
+            end if
+            if (currentClass.expandClass = 0) then result false
+            else currentClass := TYPE @ (currentClass.expandClass)
+            end if
+        end loop
+        result false
+    end isInstance
+    
 end LocalTClass
