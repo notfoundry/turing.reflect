@@ -34,7 +34,7 @@ Here we have a class, *MyClass*, with a single null-arity procedure that will pr
 
 If we wanted to invoke that *greetMe* procedure directly, we could also do it without making an instance of the container class by doing this
 ```turing
-    clazz -> getProcedure(1) -> invoke(0, nil) /* also prints "Hello World!" */
+    clazz -> getDeclaredFunction(1) -> invoke(0, nil) /* also prints "Hello World!" */
 ```
 
 The code above will find the first declared procedure in the class above and invoke it with both an instance address of *nil* and a return address of 0. If *greetMe* returned a value, the return address would be the location in memory for the result to be put. Furthermore, if *greetMe* relied on any instance fields in *MyClass*, the instance address would specify the instance to use for that invocation.
