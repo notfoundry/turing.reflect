@@ -31,27 +31,29 @@ class ConstructedTFunction
     
     body proc invoke(returnAddr: addressint, instance: unchecked ^anyclass)
         type __procedure: proc x()
-        var it := inspect()
-        var tmp: array 1..it -> count() of nat
-        var ind := 1
-        loop
-            exit when ~it -> hasNext()
-            var op := it -> next()
-            if (^op = LOCATEPARM & nat @ (#op+4) = 0) then
-                tmp(ind) := PUSHADDR;
-                tmp(ind+1) := returnAddr;
-                ind += 2
-                for i: 1..2
-                    if (it -> hasNext()) then
-                        op := it -> next()
-                    end if
-                end for
-            else
-                tmp(ind) := ^op
-                ind += 1
-            end if
-        end loop
-        cheat(__procedure, addr(tmp))()
+        if (context -> isFunction()) then
+            var tmp: array 1..* of nat := init(
+                PROC, 0,
+                PUSHADDR, 0,
+                PUSHADDR, 0,
+                CALL, 4,
+                INCSP, 8,
+                RETURN
+            )
+            tmp(4) := context -> getStartAddress()
+            tmp(6) := returnAddr
+            cheat(__procedure, addr(tmp))()
+        else
+            var tmp: array 1..* of nat := init(
+                PROC, 0,
+                PUSHADDR, 0,
+                CALL, 0,
+                INCSP, 4,
+                RETURN
+            )
+            tmp(4) := context -> getStartAddress()
+            cheat(__procedure, addr(tmp))()
+        end if
     end invoke
     
 end ConstructedTFunction

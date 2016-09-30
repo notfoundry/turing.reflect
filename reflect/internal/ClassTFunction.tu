@@ -5,40 +5,30 @@ class ClassTFunction
     body proc invoke(returnAddr: addressint, instance: unchecked ^anyclass)
         type __procedure: proc x()
         if (getContext() -> isFunction()) then
-            var ops: array 1..* of Opcodes.TYPE := init (
-                PROC, 4,
-                PUSHADDR, 0, %returnAddr
-                PUSHADDR, 0, %instance
-                FETCHADDR,
-                RESOLVEPTR,
-                PUSHCOPY,
-                RESOLVEDEF,
-                ASNNATINV,
-                LOCATETEMP, 4, 0,
-                LOCATEARG, 8,
-                FETCHADDR,
+            var ops: array 1..* of Opcodes.TYPE := init(
+                PROC, 0,
+                PUSHADDR, 0,    %function pointer
+                PUSHADDR, 0,    %return address
+                PUSHADDR, 0,    %instance pointer
                 CALL, 8,
                 INCSP, 16,
-                LOCATETEMP, 4, 0,
-                FETCHINT4,
-                ASNINT,
                 RETURN
             )
-            ops(4) := returnAddr
-            ops(6) := #instance
+            ops(4) := getContext() -> getStartAddress()
+            ops(6) := returnAddr
+            ops(8) := #instance
             cheat(__procedure, addr(ops))()
         else
             var ops: array 1..* of Opcodes.TYPE := init (
                 PROC, 0,
+                PUSHADDR, 0,    %function pointer
                 PUSHADDR, 0,    %instance pointer
-                PUSHADDR, 0,    %function address
-                CALL, 0,
+                CALL, 4,
                 INCSP, 12,
                 RETURN
             )
-            var instref := instance
-            ops(4) := addr(instref)
-            ops(6) := getContext() -> getStartAddress()
+            ops(4) := getContext() -> getStartAddress()
+            ops(6) := #instance
             cheat(__procedure, addr(ops))()
         end if
     end invoke

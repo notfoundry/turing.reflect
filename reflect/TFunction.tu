@@ -19,7 +19,7 @@ class TFunction
     deferred fcn getReturnType(): unchecked ^TypeClassifier
     
     body fcn equals(o: ^Object): boolean
-        if (o ~= nil & objectclass(self) = objectclass(o)) then
+        if (o ~= nil & objectclass(o) >= objectclass(self)) then
             result getContext() -> getStartAddress() = TFunction(o).getContext() -> getStartAddress()
         else result false
         end if

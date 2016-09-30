@@ -1,11 +1,12 @@
 unit
 module *Invoke
     import Opcodes in "Opcodes.tu",
-        InvocationArgument in "invocation/InvocationArgument.tu"
+        InvocationArgument in "invocation/InvocationArgument.tu",
+        MutableInvocationArgument in "%oot/reflect/internal/invocation/MutableInvocationArgument.tu"
     export ~.*intArg, ~.*stringArg, ~.*realArg, ~.*booleanArg
     
     fcn intArg(arg: int): unchecked ^InvocationArgument
-        var ops: array 1..2 of nat := init(
+        var ops: array 1..2 of Opcodes.TYPE := init(
             PUSHINT1, 0
         )
         if (arg > 127) then
@@ -17,7 +18,7 @@ module *Invoke
         end if
         ops(2) := cheat(nat, arg)
         
-        var node: ^InvocationArgument
+        var node: ^MutableInvocationArgument
         new node; node -> construct(ops, sizeof(int), ASNINT4INV);
         result node
     end intArg
@@ -28,37 +29,37 @@ module *Invoke
     
     fcn realArg(arg: real): unchecked ^InvocationArgument
         var __arg := arg
-        var ops: array 1..3 of nat := init(
+        var ops: array 1..3 of Opcodes.TYPE := init(
             PUSHREAL, 0, 0
         )
         ops(2) := nat @ (addr(__arg))
         ops(3) := nat @ (addr(__arg)+4)
         
-        var node: ^InvocationArgument
+        var node: ^MutableInvocationArgument
         new node; node -> construct(ops, sizeof(real), ASNREALINV);
         result node
     end realArg
     
     fcn stringArg(arg: string): unchecked ^InvocationArgument
-        var ops: array 1..3 of nat := init(
+        var ops: array 1..3 of Opcodes.TYPE := init(
             PUSHADDR1, 0, 0
         )
         ops(3) := addr(arg)
         
-        var node: ^InvocationArgument
+        var node: ^MutableInvocationArgument
         new node; node -> construct(ops, sizeof(addressint), ASNADDRINV);
         result node
     end stringArg
     
     fcn booleanArg(arg: boolean): unchecked ^InvocationArgument
-        var ops: array 1..1 of nat
+        var ops: array 1..1 of Opcodes.TYPE
         if (arg) then
             ops(1) := PUSHVAL1
         else
             ops(1) := PUSHVAL0
         end if
         
-        var node: ^InvocationArgument
+        var node: ^MutableInvocationArgument
         new node; node -> construct(ops, sizeof(int), ASNINT4INV);
         result node
     end booleanArg

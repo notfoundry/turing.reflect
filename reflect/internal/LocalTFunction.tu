@@ -100,24 +100,24 @@ class LocalTFunction
         if (context -> isFunction()) then
             var tmp: array 1..* of nat := init(
                 PROC, 0,
-                PUSHADDR1, 0, 0,
+                PUSHADDR, 0,
                 PUSHADDR, 0,
                 CALL, 4,
                 INCSP, 8,
                 RETURN
             )
-            tmp(5) := context -> getStartAddress()
-            tmp(7) := returnAddr
+            tmp(4) := context -> getStartAddress()
+            tmp(6) := returnAddr
             cheat(__procedure, addr(tmp))()
         else
             var tmp: array 1..* of nat := init(
                 PROC, 0,
-                PUSHADDR1, 0, 0,
+                PUSHADDR, 0,
                 CALL, 0,
                 INCSP, 4,
                 RETURN
             )
-            tmp(5) := context -> getStartAddress()
+            tmp(4) := context -> getStartAddress()
             cheat(__procedure, addr(tmp))()
         end if
     end invoke

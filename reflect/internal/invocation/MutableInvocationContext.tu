@@ -99,7 +99,7 @@ class MutableInvocationContext
                 for i: 1..curr -> opCount()
                     setNextOp(curr -> opAt(i))
                 end for
-                    if (insPos > 1) then
+                if (insPos > 1) then
                     setNextOp(LOCATEARG)
                     setNextOp(callSite)
                     setNextOp(curr -> getMergeOp())
