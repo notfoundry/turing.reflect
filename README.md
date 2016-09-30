@@ -11,7 +11,7 @@ Once that is complete, you can import turing.reflect into your project by insert
 
 From there, you will have access to the **reflectc** and **reflectf** functions for reflecting classes and functions/procedures respectively. *reflectc* takes either a pointer to a class instance or the class itself (as shown below) as a argument, whereas *reflectf* takes the function/procedure to be reflected as an argument.
 To reflect a class, get a *TClass* instance as such
-```scala
+```turing
   import "%oot/reflect/universe"
   
   class MyClass
@@ -26,14 +26,14 @@ To reflect a class, get a *TClass* instance as such
 ```
 
 Here we have a class, *MyClass*, with a single null-arity procedure that will print "Hello World!". If we wanted to make an instance of that class, we could do the following
-```scala
+```turing
   var instance := clazz -> newInstance()
   
   MyClass(instance).greetMe() /* prints "Hello World!" */
 ```
 
 If we wanted to invoke that *greetMe* procedure directly, we could also do it without making an instance of the container class by doing this
-```scala
+```turing
     clazz -> getProcedure(1) -> invoke(0, nil) /* also prints "Hello World!" */
 ```
 
@@ -46,7 +46,7 @@ The Turing language does not support these kinds of constructs out of the box, b
 > "%oot/reflect/annotations"
 
 From there, you can create annotations by putting the word *annotation* before a declared empty procedure
-```scala
+```turing
   annotation proc test
   end test
   
@@ -55,7 +55,7 @@ From there, you can create annotations by putting the word *annotation* before a
 ```
 
 Both *test* and *named* can now be scanned for as annotations by turing.reflect's reflective objects. In this example
-```scala
+```turing
 class TestSuite
   test
   proc testDoingSomething()
@@ -71,7 +71,7 @@ end TestSuite
 ```
 
 we can scan the TestSuite class for all functions annotated with *test*, and print the names of all those functions also annotated as *named*
-```scala
+```turing
   const clazz := reflectc(TestSuite)
   
   for i: 1..clazz -> getFunctionCount()
@@ -88,7 +88,7 @@ The annotation reflection API also allows you enumerate all annotations present 
 ###Invoking functions with arguments reflectively
 To invoke functions that take arguments of some kind, **TFunction**'s *invoke* function isn't good enough. Instead, *TFunction* defines a separate function *invokeArgs* to accomplish this. Similar to *invoke*, you pass arguments defining the function return address and class instance address to use for the invocation (these are ignored if the function has no return value or is not in a class, respectively).
 Take the example of this greeting function
-```scala
+```turing
 fcn deliverGreeting(greeting: string, recipient: string, allCaps: boolean, repetitions: int): string
   var s := "to " + recipient + ": "
   for i: 1..repetitions
@@ -107,7 +107,7 @@ To invoke this, we first have to include the **invoke** module by adding the fol
 
 From there, invoking the function is simple
 
-```scala
+```turing
 var greeting: string
 var func := reflectf(deliverGreeting)
 
