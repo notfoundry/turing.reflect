@@ -4,19 +4,16 @@ class MutableInvocationArgument
     import Opcodes in "%oot/reflect/Opcodes.tu"
     export construct
     
-    var opSize: nat
-    
-    var mergeOp: Opcodes.TYPE
+    var argSize: nat
     
     var argumentOps: flexible array 1..0 of Opcodes.TYPE
     
-    proc construct(var ops: array 1..* of Opcodes.TYPE, __opSize: nat, __mergeOp: Opcodes.TYPE)
+    proc construct(var ops: array 1..* of Opcodes.TYPE, __argSize: nat)
         new argumentOps, upper(ops)
         for i: 1..upper(ops)
             argumentOps(i) := ops(i)
         end for
-        opSize := __opSize
-        mergeOp := __mergeOp
+        argSize := __argSize
     end construct
     
     body fcn opCount(): nat
@@ -28,11 +25,7 @@ class MutableInvocationArgument
     end opAt
     
     body fcn getSize(): nat
-        result opSize
+        result argSize
     end getSize
-    
-    body fcn getMergeOp(): Opcodes.TYPE
-        result mergeOp
-    end getMergeOp
     
 end MutableInvocationArgument

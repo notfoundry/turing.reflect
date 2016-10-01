@@ -9,7 +9,7 @@ class LocalTFunction
         MutableTypeClassifier in "%oot/reflect/internal/MutableTypeClassifier.tu",
         AnnotationManifest in "annotation/AnnotationManifest.tu",
         AnnotationFactory in "annotation/AnnotationFactory.tu",
-        MutableInvocationContext in "invocation/MutableInvocationContext.tu",
+        DefaultInvocationContext in "invocation/DefaultInvocationContext.tu",
         MutableRepeatedAnnotation in "annotation/MutableRepeatedAnnotation.tu"
     export construct
     
@@ -33,9 +33,9 @@ class LocalTFunction
         result resultInspector
     end inspect
     
-    body fcn invokeArgs(returnAddr, instanceAddr: addressint): unchecked ^InvocationContext
-        var resultContext: ^MutableInvocationContext
-        new resultContext; resultContext -> construct(context, returnAddr, instanceAddr);
+    body fcn invokeArgs(returnAddr: addressint, instance: unchecked ^anyclass): unchecked ^InvocationContext
+        var resultContext: ^DefaultInvocationContext
+        new resultContext; resultContext -> construct(self, returnAddr, instance);
         result resultContext
     end invokeArgs
     
@@ -100,8 +100,8 @@ class LocalTFunction
         if (context -> isFunction()) then
             var tmp: array 1..* of nat := init(
                 PROC, 0,
-                PUSHADDR, 0,
-                PUSHADDR, 0,
+                PUSHADDR, 0,    %function pointer
+                PUSHADDR, 0,    %return address
                 CALL, 4,
                 INCSP, 8,
                 RETURN
@@ -112,7 +112,7 @@ class LocalTFunction
         else
             var tmp: array 1..* of nat := init(
                 PROC, 0,
-                PUSHADDR, 0,
+                PUSHADDR, 0,    %function pointer
                 CALL, 0,
                 INCSP, 4,
                 RETURN

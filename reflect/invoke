@@ -3,10 +3,15 @@ module *Invoke
     import Opcodes in "Opcodes.tu",
         InvocationArgument in "invocation/InvocationArgument.tu",
         MutableInvocationArgument in "%oot/reflect/internal/invocation/MutableInvocationArgument.tu"
-    export ~.*intArg, ~.*stringArg, ~.*realArg, ~.*booleanArg
+    export ~.*intArg, ~.*int1Arg, ~.*int2Arg, ~.*int4Arg,
+        ~.*natArg, ~.*nat1Arg, ~.*nat2Arg, ~.*nat4Arg,
+        ~.*pointerArg, ~.*stringArg,
+        ~.*realArg, ~.*real4Arg, ~.*real8Arg,
+        ~.*booleanArg
     
+    /* internally, every integer type takes up 4 bytes on the stack anyways */
     fcn intArg(arg: int): unchecked ^InvocationArgument
-        var ops: array 1..2 of Opcodes.TYPE := init(
+        var ops: array 1..* of Opcodes.TYPE := init(
             PUSHINT1, 0
         )
         if (arg > 127) then
@@ -19,36 +24,85 @@ module *Invoke
         ops(2) := cheat(nat, arg)
         
         var node: ^MutableInvocationArgument
-        new node; node -> construct(ops, sizeof(int), ASNINT4INV);
+        new node; node -> construct(ops, sizeof(int));
         result node
     end intArg
     
+    fcn int1Arg(arg: int1): unchecked ^InvocationArgument
+        result intArg(arg)
+    end int1Arg
+    
+    fcn int2Arg(arg: int2): unchecked ^InvocationArgument
+        result intArg(arg)
+    end int2Arg
+    
+    fcn int4Arg(arg: int4): unchecked ^InvocationArgument
+        result intArg(arg)
+    end int4Arg
+    
+    /* enums are just integers */
     fcn enumArg(arg: cheat nat): unchecked ^InvocationArgument
         result intArg(arg)
     end enumArg
     
-    fcn realArg(arg: real): unchecked ^InvocationArgument
-        var __arg := arg
-        var ops: array 1..3 of Opcodes.TYPE := init(
-            PUSHREAL, 0, 0
+    /* there is no specific stack pushing operation for unsigned integers  */
+    fcn natArg(arg: int): unchecked ^InvocationArgument
+        result intArg(arg)
+    end natArg
+    
+    fcn nat1Arg(arg: nat1): unchecked ^InvocationArgument
+        result natArg(arg)
+    end nat1Arg
+    
+    fcn nat2Arg(arg: nat2): unchecked ^InvocationArgument
+        result natArg(arg)
+    end nat2Arg
+    
+    fcn nat4Arg(arg: nat4): unchecked ^InvocationArgument
+        result natArg(arg)
+    end nat4Arg
+    
+    fcn pointerArg(arg: addressint): unchecked ^InvocationArgument
+        var ops: array 1..* of Opcodes.TYPE := init(
+            PUSHADDR, 0
         )
-        ops(2) := nat @ (addr(__arg))
-        ops(3) := nat @ (addr(__arg)+4)
+        ops(2) := arg
         
         var node: ^MutableInvocationArgument
-        new node; node -> construct(ops, sizeof(real), ASNREALINV);
+        new node; node -> construct(ops, sizeof(addressint));
+        result node
+    end pointerArg
+    
+    fcn realArg(arg: real): unchecked ^InvocationArgument
+        var ops: array 1..* of Opcodes.TYPE := init(
+            PUSHREAL, 0, 0
+        )
+        real @ (addr(ops(2))) := arg
+        
+        var node: ^MutableInvocationArgument
+        new node; node -> construct(ops, sizeof(real));
         result node
     end realArg
     
-    fcn stringArg(arg: string): unchecked ^InvocationArgument
-        var ops: array 1..3 of Opcodes.TYPE := init(
-            PUSHADDR1, 0, 0
+    /* there is no specific stack pushing operation for single-precision floating-point numbers */
+    fcn real4Arg(arg: real4): unchecked ^InvocationArgument
+        var ops: array 1..* of Opcodes.TYPE := init(
+            PUSHREAL, 0, 0
         )
-        ops(3) := addr(arg)
+        real4 @ (addr(ops(2))) := arg
         
         var node: ^MutableInvocationArgument
-        new node; node -> construct(ops, sizeof(addressint), ASNADDRINV);
+        new node; node -> construct(ops, sizeof(real4));
         result node
+    end real4Arg
+    
+    fcn real8Arg(arg: real8): unchecked ^InvocationArgument
+        result realArg(arg)
+    end real8Arg
+    
+    /* strings are all pointers to some region of memory */
+    fcn stringArg(arg: string): unchecked ^InvocationArgument
+        result pointerArg(addr(arg))
     end stringArg
     
     fcn booleanArg(arg: boolean): unchecked ^InvocationArgument
@@ -60,7 +114,7 @@ module *Invoke
         end if
         
         var node: ^MutableInvocationArgument
-        new node; node -> construct(ops, sizeof(int), ASNINT4INV);
+        new node; node -> construct(ops, sizeof(int));
         result node
     end booleanArg
     

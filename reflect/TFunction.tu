@@ -14,7 +14,7 @@ class TFunction
     
     deferred proc invoke(returnAddr: addressint, instance: unchecked ^anyclass)
     
-    deferred fcn invokeArgs(returnAddr, instanceAddr: addressint): unchecked ^InvocationContext
+    deferred fcn invokeArgs(returnAddr: addressint, instance: unchecked ^anyclass): unchecked ^InvocationContext
     
     deferred fcn getReturnType(): unchecked ^TypeClassifier
     
