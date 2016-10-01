@@ -4,8 +4,11 @@
 turing.reflect provides an API for reflectively accessing and analyzing classes, functions, and fields in the Turing runtime.
 This is done by analyzing the internal representations of running code to reconstruct what its source-level equivalent would be, along with manipulating the interpreter to run certain dynamically-generated instructions that would otherwise be unable to exist.
 
+###Dependencies
+turing.reflect relies on the [turing.lang](https://github.com/foundry27/turing.lang) library, which should also be placed in the *support* directory of your Turing interpreter
+
 ###How does it work?
-The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder to the upper-level *support* directory of your Turing interpreter. The folder tree should look like *%install directory%/support/reflect/*.
+The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder to the upper-level *support* directory of your Turing interpreter (where the Turing program is located). The folder tree should look like *%turing directory%/support/reflect/*.
 Once that is complete, you can import turing.reflect into your project by inserting this line into a source file header
 > import "%oot/reflect/universe"
 
@@ -124,21 +127,13 @@ put greeting /* prints "to Mike: YOYOYOYOYO" */
 As you can see, the syntax for these invocations is fluent and simple. We provide four arguments to the **invocation context** through the *with* function, and call *do* to finally perform the invocation. This has the happy side effect of allowing arguments for invocation to be accumulated over time prior to invocation, instead of passing them all at once.
 
 ###Features
-turing.reflect is composed of **contextual** and **pervasive** operations.
-Contextutal operations are actions that can be done without modifying the underlying opcodes from which constructs such as functions and classes are comprised, such as
+turing.reflect has a fairly broad feature set, closely mimicking Java's reflection API, including
   * class instance creation
   * class assignability checks
   * annotation creation, placement and retrieval
   * function invocation
   * function return value type resolution
-  * function argument type resolution
-
-Pervasive operations are actions that have the ability to modify the constructs with which they interact, such as
-  * inserting trampolines before and after functions
-  * overriding the return value of functions
-  * modifying constructors in classes
-  * modifying the inheritence hiearchy of classes
-  * modifying the initial field values of classes
-
-###Dependencies
-turing.reflect relies on the [turing.lang](https://github.com/foundry27/turing.lang) library, which should also be placed in the *support* directory of your Turing interpreter
+  * class function enumeration
+  * class field enumeration
+  
+Lower-level details regarding any reflected object are available through *CodeContext* objects, giving you details regarding the internal start and end positions of constructs, how many operations they are composed of, and how many lines of source code they equate to.
