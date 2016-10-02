@@ -15,11 +15,14 @@ class MutableAnnotation
         var op := callsite
         loop
             case (Opcodes.TYPE @ (op)) of
-                label Opcodes.SETLINENO:
+                label SETLINENO:
                     op += Opcodes.OP_SIZE * (Opcodes.argCount(Opcodes.SETLINENO) + 1)
                     exit
-                label Opcodes.SETFILENO:
+                label SETFILENO:
                     op += Opcodes.OP_SIZE * (Opcodes.argCount(Opcodes.SETFILENO) + 1)
+                    exit
+                label INCLINENO:
+                    op += Opcodes.OP_SIZE
                     exit
                 label:
                     op -= Opcodes.OP_SIZE
