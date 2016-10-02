@@ -4,7 +4,8 @@ module ReflectionFactory
             FunctionContext in "%oot/reflect/context/FunctionContext.tu",
             DeclaredFunctionContext in "%oot/reflect/internal/context/DeclaredFunctionContext.tu",
             ClassContext in "%oot/reflect/context/ClassContext.tu",
-            DeclaredClassContext in "%oot/reflect/internal/context/DeclaredClassContext.tu"
+            DeclaredClassContext in "%oot/reflect/internal/context/DeclaredClassContext.tu",
+            OpcodeHelper in "OpcodeHelper.tu"
     export makeFunctionContext, makeClassContext
     
     fcn isFunctionEnd(address: addressint): boolean
@@ -32,6 +33,7 @@ module ReflectionFactory
     end isHandlerFunctionEnd
     
     fcn isFunction(address: addressint, isClass: boolean): boolean
+        put Opcodes.TYPE @ (address)
         var returnDef := 0
         if (isClass) then
             returnDef := Opcodes.OP_SIZE
@@ -79,7 +81,11 @@ module ReflectionFactory
                 endAddress := curr
                 foundEndAddress := true
             end if
-            if (~foundFunc & isFunction(curr, internal)) then
+            /*if (~foundFunc & isFunction(curr, internal)) then
+                isFunc := true
+                foundFunc := true
+            end if*/
+            if (~foundFunc & op = RETURN & OpcodeHelper.isDereferencingOp(Opcodes.TYPE @ (curr- Opcodes.OP_SIZE))) then
                 isFunc := true
                 foundFunc := true
             end if
