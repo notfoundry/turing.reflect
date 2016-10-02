@@ -5,7 +5,7 @@ turing.reflect provides an API for reflectively accessing and analyzing classes,
 This is done by analyzing the internal representations of running code to reconstruct what its source-level equivalent would be, along with manipulating the interpreter to run certain dynamically-generated instructions that would otherwise be unable to exist.
 
 ###How does it work?
-The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder to the upper-level *support* directory of your Turing interpreter (where the Turing program is located). The folder tree should look like *%turing directory%/support/reflect/*.
+The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder of this project to the main directory of your Turing interpreter (where the Turing program is located).
 Once that is complete, you can import turing.reflect into your project by inserting this line into a source file header
 > import "%oot/reflect/universe"
 
