@@ -4,11 +4,8 @@
 turing.reflect provides an API for reflectively accessing and analyzing classes, functions, and fields in the Turing runtime.
 This is done by analyzing the internal representations of running code to reconstruct what its source-level equivalent would be, along with manipulating the interpreter to run certain dynamically-generated instructions that would otherwise be unable to exist.
 
-###Dependencies
-turing.reflect relies on the [turing.lang](https://github.com/foundry27/turing.lang) library, which should also be placed in the *support* directory of your Turing interpreter
-
 ###How does it work?
-The first thing you'll need to do to get started with turing.reflect after adding the necessary dependencies is copy the *reflect* folder to the upper-level *support* directory of your Turing interpreter (where the Turing program is located). The folder tree should look like *%turing directory%/support/reflect/*.
+The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder to the upper-level *support* directory of your Turing interpreter (where the Turing program is located). The folder tree should look like *%turing directory%/support/reflect/*.
 Once that is complete, you can import turing.reflect into your project by inserting this line into a source file header
 > import "%oot/reflect/universe"
 
@@ -132,7 +129,7 @@ turing.reflect has a fairly broad feature set, closely mimicking Java's reflecti
   * class assignability checks
   * annotation creation, placement and retrieval
   * function invocation
-  * function return value type resolution
+  * function return type resolution
   * class function enumeration
   * class field enumeration
   
