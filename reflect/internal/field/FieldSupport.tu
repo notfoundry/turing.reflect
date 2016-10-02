@@ -28,7 +28,14 @@ module FieldSupport
                     if (Opcodes.TYPE @ (op + Opcodes.OP_SIZE) >= 4) then
                         const fieldOffset := Opcodes.TYPE @ (op + Opcodes.OP_SIZE)
                         op += Opcodes.OP_SIZE * 2
+                        
+                        if (Opcodes.TYPE @ (op) = PUSHINT2) then
+                            /* strings push their upper bounds prior to dereferencing */
+                            op += Opcodes.OP_SIZE * (Opcodes.argCount(PUSHINT2) + 1)
+                        end if
+                        
                         const opLookup := Opcodes.TYPE @ (op)
+                        
                         if (OpcodeHelper.isInitializationOp(opLookup)) then
                             fields -> addField(createField(fieldOffset, OpcodeHelper.returnTypeFromInitializationOp(opLookup), op))
                         elsif (OpcodeHelper.isDereferencingOp(opLookup)) then
