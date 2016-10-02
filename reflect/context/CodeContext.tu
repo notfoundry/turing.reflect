@@ -1,6 +1,6 @@
 unit
 class CodeContext
-    inherit Object in "%oot/turing/lang/Object.tu"
+    inherit AnyRef in "%oot/reflect/AnyRef.tu"
     export getStartAddress, getEndAddress, getSourceLength, getOpCount
     
     deferred fcn getStartAddress(): addressint

@@ -1,6 +1,6 @@
 unit
 class AnnotationManifest
-    inherit Object in "%oot/turing/lang/Object.tu"
+    inherit AnyRef in "%oot/reflect/AnyRef.tu"
     import Annotation in "%oot/reflect/annotation/Annotation.tu"
     export getAnnotationCount, getAnnotation
     

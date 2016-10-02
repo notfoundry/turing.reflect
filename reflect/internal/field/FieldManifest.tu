@@ -1,6 +1,6 @@
 unit
 class FieldManifest
-    inherit Object in "%oot/turing/lang/Object.tu"
+    inherit AnyRef in "%oot/reflect/AnyRef.tu"
     import TField in "%oot/reflect/TField.tu"
     export getField, getFieldCount
     

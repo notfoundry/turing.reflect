@@ -58,12 +58,8 @@ class TClass
     body fcn getObjectSize(): nat
         result getDescriptor().objSize
     end getObjectSize
-    
-    body fcn toString(): string
-        result "class " + getName()
-    end toString
-    
-    body fcn equals(o: ^Object): boolean
+
+    body fcn equals(o: unchecked ^anyclass): boolean
         if (o ~= nil & objectclass(o) >= objectclass(self)) then
             result getDescriptor().baseClass = TClass(o).getDescriptor().baseClass
         else result false

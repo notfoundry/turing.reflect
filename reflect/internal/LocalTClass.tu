@@ -7,7 +7,7 @@ class LocalTClass
         CodeHelper in "%oot/reflect/internal/util/CodeHelper.tu",
         ClassTFunction in "%oot/reflect/internal/ClassTFunction.tu",
         ReflectionFactory in "util/ReflectionFactory.tu",
-        Conditions in "%oot/turing/util/Conditions.tu",
+        Conditions in "util/Conditions.tu",
         FieldSupport in "field/FieldSupport.tu",
         FieldManifest in "field/FieldManifest.tu",
         AnnotationManifest in "annotation/AnnotationManifest.tu",

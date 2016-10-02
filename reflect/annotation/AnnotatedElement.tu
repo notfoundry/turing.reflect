@@ -1,6 +1,6 @@
 unit
 class AnnotatedElement
-    inherit Object in "%oot/turing/lang/Object.tu"
+    inherit AnyRef in "%oot/reflect/AnyRef.tu"
     import Annotation in "Annotation.tu",
         RepeatedAnnotation in "RepeatedAnnotation.tu"
     export getDeclaredAnnotationCount, getAnnotationCount, getDeclaredAnnotationAt, getAnnotationAt, getDeclaredAnnotation, getAnnotation, getDeclaredAnnotations, getAnnotations, isAnnotationPresent

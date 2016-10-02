@@ -32,7 +32,7 @@ class DeclaredClassContext
         result opCount
     end getOpCount
     
-    body fcn equals(o: ^Object): boolean
+    body fcn equals(o: unchecked ^anyclass): boolean
         if (o ~= nil & objectclass(o) >= ClassContext) then
             result getStartAddress() = ClassContext(o).getStartAddress()
         else result false

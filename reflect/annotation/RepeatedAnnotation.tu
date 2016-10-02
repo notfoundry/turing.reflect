@@ -1,6 +1,6 @@
 unit
 class RepeatedAnnotation
-    inherit Object in "%oot/turing/lang/Object.tu"
+    inherit AnyRef in "%oot/reflect/AnyRef.tu"
     import Annotation in "Annotation.tu"
     export getInstanceCount, getInstance
 

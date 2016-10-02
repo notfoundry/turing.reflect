@@ -1,6 +1,6 @@
 unit
 class Annotation
-    inherit Object in "%oot/turing/lang/Object.tu"
+    inherit AnyRef in "%oot/reflect/AnyRef.tu"
     export getElementCount, getElement, isInstance
     
     deferred fcn getElementCount(): nat
