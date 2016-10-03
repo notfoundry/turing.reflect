@@ -5,7 +5,7 @@ class LocalTFunction
         DefinedOpInspector in "util/DefinedOpInspector.tu",
         OpcodeHelper in "%oot/reflect/internal/util/OpcodeHelper.tu",
         Primitives in "%oot/reflect/Primitives.tu",
-        ReflectionFactory in "util/ReflectionFactory.tu",
+        ContextFactory in "util/ContextFactory.tu",
         MutableTypeClassifier in "%oot/reflect/internal/MutableTypeClassifier.tu",
         AnnotationManifest in "annotation/AnnotationManifest.tu",
         AnnotationFactory in "annotation/AnnotationFactory.tu",
@@ -151,6 +151,7 @@ class LocalTFunction
             resultVal -> construct(finalType, finalSize)
             returnType := resultVal
         end if
+        
         result returnType
     end getReturnType
 end LocalTFunction

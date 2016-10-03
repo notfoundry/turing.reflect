@@ -6,7 +6,7 @@ class LocalTClass
         ClassFactory in "%oot/reflect/internal/util/ClassFactory.tu",
         CodeHelper in "%oot/reflect/internal/util/CodeHelper.tu",
         ClassTFunction in "%oot/reflect/internal/ClassTFunction.tu",
-        ReflectionFactory in "util/ReflectionFactory.tu",
+        ContextFactory in "util/ContextFactory.tu",
         Conditions in "util/Conditions.tu",
         FieldSupport in "field/FieldSupport.tu",
         FieldManifest in "field/FieldManifest.tu",
@@ -74,15 +74,11 @@ class LocalTClass
     end newInstance
     
     body fcn getSuperclass(): unchecked ^TClass
-        if (superclass = nil) then
-            if (descriptor.expandClass ~= NONEXISTENT_CLASS) then
-                var resultClass: ^LocalTClass
-                var desc := TClass.TYPE @ (descriptor.expandClass)
-                new resultClass; resultClass -> construct(desc, ReflectionFactory.makeClassContext(desc.initRoutine))
-                superclass := resultClass
-            else
-                superclass := nil
-            end if
+        if (superclass = nil & descriptor.expandClass ~= NONEXISTENT_CLASS) then
+            var resultClass: ^LocalTClass
+            var desc := TClass.TYPE @ (descriptor.expandClass)
+            new resultClass; resultClass -> construct(desc, ContextFactory.makeClassContext(desc.initRoutine))
+            superclass := resultClass
         end if
         result superclass
     end getSuperclass
@@ -133,7 +129,7 @@ class LocalTClass
 
         if (~Conditions.isValid(declaredFunctions(fcnNumber))) then
             var resultFunc: ^ClassTFunction
-            new resultFunc; resultFunc -> construct(ReflectionFactory.makeFunctionContext(functionDeclarationSites(fcnNumber), true));
+            new resultFunc; resultFunc -> construct(ContextFactory.makeFunctionContext(functionDeclarationSites(fcnNumber), true));
             declaredFunctions(fcnNumber) := resultFunc
         end if
         

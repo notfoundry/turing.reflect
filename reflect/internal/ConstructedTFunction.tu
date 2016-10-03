@@ -4,7 +4,7 @@ class ConstructedTFunction
     import Opcodes in "%oot/reflect/Opcodes.tu",
         DefinedOpInspector in "util/DefinedOpInspector.tu",
         FunctionContext in "%oot/reflect/context/FunctionContext.tu",
-        ReflectionFactory in "util/ReflectionFactory.tu"
+        ContextFactory in "util/ContextFactory.tu"
     export construct
     
     var opcodes: flexible array 1..0 of Opcodes.TYPE
@@ -16,7 +16,7 @@ class ConstructedTFunction
         for i: 1..upper(ops)
             opcodes(i) := ops(i)
         end for
-        context := ReflectionFactory.makeFunctionContext(addr(opcodes), false)
+        context := ContextFactory.makeFunctionContext(addr(opcodes), false)
     end construct
     
     body fcn getContext(): unchecked ^FunctionContext

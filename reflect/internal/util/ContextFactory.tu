@@ -1,5 +1,5 @@
 unit
-module ReflectionFactory
+module ContextFactory
     import Opcodes in "%oot/reflect/Opcodes.tu",
             FunctionContext in "%oot/reflect/context/FunctionContext.tu",
             DeclaredFunctionContext in "%oot/reflect/internal/context/DeclaredFunctionContext.tu",
@@ -126,4 +126,4 @@ module ReflectionFactory
         new context; context -> construct(classAddr, endAddress, lineCount, opCount);
         result context
     end makeClassContext
-end ReflectionFactory
+end ContextFactory
