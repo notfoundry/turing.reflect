@@ -5,6 +5,7 @@ module *Invoke
         MutableInvocationArgument in "%oot/reflect/internal/invocation/MutableInvocationArgument.tu"
     export ~.*intArg, ~.*int1Arg, ~.*int2Arg, ~.*int4Arg,
         ~.*natArg, ~.*nat1Arg, ~.*nat2Arg, ~.*nat4Arg,
+        ~.*enumArg,
         ~.*pointerArg, ~.*stringArg,
         ~.*realArg, ~.*real4Arg, ~.*real8Arg,
         ~.*booleanArg
@@ -46,7 +47,7 @@ module *Invoke
     end enumArg
     
     /* there is no specific stack pushing operation for unsigned integers  */
-    fcn natArg(arg: int): unchecked ^InvocationArgument
+    fcn natArg(arg: nat): unchecked ^InvocationArgument
         result intArg(arg)
     end natArg
     
