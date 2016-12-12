@@ -81,10 +81,6 @@ module ContextFactory
                 endAddress := curr
                 foundEndAddress := true
             end if
-            /*if (~foundFunc & isFunction(curr, internal)) then
-                isFunc := true
-                foundFunc := true
-            end if*/
             if (~foundFunc & op = RETURN & OpcodeHelper.isDereferencingOp(Opcodes.TYPE @ (curr- Opcodes.OP_SIZE))) then
                 isFunc := true
                 foundFunc := true

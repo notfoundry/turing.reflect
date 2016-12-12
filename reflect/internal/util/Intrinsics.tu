@@ -10,6 +10,8 @@ module Intrinsics
         var op := internalOperationAddress
         loop
             exit when Opcodes.TYPE @ (op) = PROC
+                & Opcodes.TYPE @ (op + Opcodes.OP_SIZE * 2) = SETFILENO
+                & Opcodes.TYPE @ (op + Opcodes.OP_SIZE * 5) = SETLINENO
             op -= Opcodes.OP_SIZE
         end loop
         result op
