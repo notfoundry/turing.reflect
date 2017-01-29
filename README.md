@@ -5,7 +5,7 @@ turing.reflect provides an API for reflectively accessing and analyzing classes,
 This is done by analyzing the internal representations of running code to reconstruct what its source-level equivalent would be, along with manipulating the interpreter to run certain dynamically-generated instructions that would otherwise be unable to exist.
 
 ###How does it work?
-The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder of this project to the main directory of your Turing interpreter (where the Turing program is located).
+The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder of this project to the main directory of your Turing interpreter (where the Turing executable is located), or if you are using the newer Qt-based OpenTuring editor, the upper-level support directory containing all the Qt DLLs and the larger OpenTuring executable.
 Once that is complete, you can import turing.reflect into your project by inserting this line into a source file header
 > import "%oot/reflect/universe"
 
@@ -25,7 +25,7 @@ To reflect a class, get a *TClass* instance as such
   var clazz := reflectc(MyClass)
 ```
 
-Here we have a class, *MyClass*, with a single null-arity procedure that will print "Hello World!". If we wanted to make an instance of that class, we could do the following
+Here we have a class, *MyClass*, with a single procedure that will print "Hello World!". If we wanted to make an instance of that class, we could do the following
 ```turing
   var instance := clazz -> newInstance()
   
