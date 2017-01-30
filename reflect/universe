@@ -1,3 +1,8 @@
+/*
+Universe provides a complete set of reflection operations which make it possible for one to reflectively inspect Turing objects.
+The two main functions provided by the universe are reflectc and reflectf, designed to deliver reflective representations
+of Turing classes and functions through TClass and TFunction objects respectively.
+*/
 unit
 module *Universe
     import TClass in "TClass.tu",
@@ -5,11 +10,22 @@ module *Universe
         ReflectiveObjects in "internal/util/ReflectiveObjects.tu"
     export ~.*reflectc, ~.*reflectf
     
+    /*
+    reflectc delivers reflective representations of classes in the Turing runtime.
+    This can be invoked correctly by either passing a pointer to a class an as argument, or by passing the full class name itself. Both
+    are fully capable of delivering the necessary type information for reflection to take place.
+    */
     fcn reflectc(o: cheat addressint): unchecked ^TClass
         type __anyclass: unchecked ^anyclass
         result ReflectiveObjects.getClass(cheat(TClass.TYPE, objectclass(cheat(__anyclass, o))))
     end reflectc
     
+    /*
+    reflectf delivers reflective representations of functions in the Turing runtime.
+    This can be invoked correctly by either passing the full name of the function to be reflected or a raw pointer to a function.
+    This necessitates that the function be in scope in order to be reflected by name, however raw address-based function reflection
+    has no such restriction.
+    */
     fcn reflectf(o: cheat addressint): unchecked ^TFunction
         result ReflectiveObjects.getFunction(o)
     end reflectf

@@ -1,7 +1,25 @@
+/*
+Annotations provides the base marker for marking a function as an annotation. Annotations can be scanned for an retrieved by the reflection
+runtime, allowing metadata to be attached to classes, functions, and more.
+*/
 unit
 module *Annotations
     export ~.*annotation
     
+    /*
+    This function serves as a marker for annotations in the reflection runtime. An annotation named "named" with a single string member
+    could be defined by declaring
+    "
+    annotation proc named (name: string)
+    end named
+    "
+    and could be subsequently be attached by declaring
+    "
+    named ("Name")
+    proc namedProcedure()
+    end namedProcedure
+    "
+    */
     proc annotation
     end annotation
 

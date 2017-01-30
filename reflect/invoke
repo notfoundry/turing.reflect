@@ -1,3 +1,7 @@
+/*
+Invoke provides a set of visitors necessary to reflectively invoke functions that take arguments. TFunction#invokeArgs itself provides
+an invocation builder of sorts, allowing any number of these visitors to be accepted by the builder.
+*/
 unit
 module *Invoke
     import Opcodes in "Opcodes.tu",
@@ -10,8 +14,11 @@ module *Invoke
         ~.*realArg, ~.*real4Arg, ~.*real8Arg,
         ~.*booleanArg
     
-    /* internally, every integer type takes up 4 bytes on the stack anyways */
+    /*
+    Adapts a standard signed integer for use in reflective function invocation
+    */
     fcn intArg(arg: int): unchecked ^InvocationArgument
+        /* internally, every integer type takes up 4 bytes on the stack anyways */
         var ops: array 1..* of Opcodes.TYPE := init(
             PUSHINT1, 0
         )
@@ -29,40 +36,67 @@ module *Invoke
         result node
     end intArg
     
+    /*
+    Adapts a signed one-byte integer for use in reflective function invocation
+    */
     fcn int1Arg(arg: int1): unchecked ^InvocationArgument
         result intArg(arg)
     end int1Arg
     
+    /*
+    Adapts a signed two-byte integer for use in reflective function invocation
+    */
     fcn int2Arg(arg: int2): unchecked ^InvocationArgument
         result intArg(arg)
     end int2Arg
     
+    /*
+    Adapts a signed four-byte integer for use in reflective function invocation
+    */
     fcn int4Arg(arg: int4): unchecked ^InvocationArgument
         result intArg(arg)
     end int4Arg
     
-    /* enums are just integers */
+    /*
+    Adapts an enumeration value for use in reflective function invocation
+    */
     fcn enumArg(arg: cheat nat): unchecked ^InvocationArgument
+        /* enums are just integers */
         result intArg(arg)
     end enumArg
     
-    /* there is no specific stack pushing operation for unsigned integers  */
+    /*
+    Adapts an standard unsigned integer for use in reflective function invocation
+    */
     fcn natArg(arg: nat): unchecked ^InvocationArgument
+        /* there is no specific stack pushing operation for unsigned integers  */
         result intArg(arg)
     end natArg
     
+    /*
+    Adapts a one-byte unsigned integer for use in reflective function invocation
+    */
     fcn nat1Arg(arg: nat1): unchecked ^InvocationArgument
         result natArg(arg)
     end nat1Arg
     
+    /*
+    Adapts an two-byte unsigned integer for use in reflective function invocation
+    */
     fcn nat2Arg(arg: nat2): unchecked ^InvocationArgument
         result natArg(arg)
     end nat2Arg
     
+    /*
+    Adapts an four-byte unsigned integer for use in reflective function invocation
+    */
     fcn nat4Arg(arg: nat4): unchecked ^InvocationArgument
         result natArg(arg)
     end nat4Arg
     
+    /*
+    Adapts a raw pointer for use in reflective function invocation
+    */
     fcn pointerArg(arg: addressint): unchecked ^InvocationArgument
         var ops: array 1..* of Opcodes.TYPE := init(
             PUSHADDR, 0
@@ -74,6 +108,9 @@ module *Invoke
         result node
     end pointerArg
     
+    /*
+    Adapts an standard floating-point number for use in reflective function invocation
+    */
     fcn realArg(arg: real): unchecked ^InvocationArgument
         var ops: array 1..* of Opcodes.TYPE := init(
             PUSHREAL, 0, 0
@@ -85,8 +122,11 @@ module *Invoke
         result node
     end realArg
     
-    /* there is no specific stack pushing operation for single-precision floating-point numbers */
+    /*
+    Adapts a single-precision floating-point number for use in reflective function invocation
+    */
     fcn real4Arg(arg: real4): unchecked ^InvocationArgument
+        /* there is no specific stack pushing operation for single-precision floating-point numbers */
         var ops: array 1..* of Opcodes.TYPE := init(
             PUSHREAL, 0, 0
         )
@@ -97,15 +137,24 @@ module *Invoke
         result node
     end real4Arg
     
+    /*
+    Adapts a double-precision floating-point number for use in reflective function invocation
+    */
     fcn real8Arg(arg: real8): unchecked ^InvocationArgument
         result realArg(arg)
     end real8Arg
     
-    /* strings are all pointers to some region of memory */
+    /*
+    Adapts a string for use in reflective function invocation
+    */
     fcn stringArg(arg: string): unchecked ^InvocationArgument
+        /* strings are all pointers to some region of memory */
         result pointerArg(addr(arg))
     end stringArg
     
+    /*
+    Adapts a boolean for use in reflective function invocation
+    */
     fcn booleanArg(arg: boolean): unchecked ^InvocationArgument
         var ops: array 1..1 of Opcodes.TYPE
         if (arg) then
