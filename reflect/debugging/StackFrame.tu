@@ -1,5 +1,7 @@
+unit
 class StackFrame
-    import TFunction, TClass
+    import TFunction in "%oot/reflect/TFunction.tu",
+        TClass in "%oot/reflect/TClass.tu"
     export getCalledFunction, getContainingClass, getLineNumber
     
     deferred fcn getCalledFunction(): unchecked ^TFunction

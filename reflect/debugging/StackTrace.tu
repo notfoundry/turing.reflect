@@ -1,6 +1,6 @@
 unit
 class StackTrace
-    import StackFrame
+    import StackFrame in "StackFrame.tu"
     export getStackFrameCount, getStackFrame
     
     deferred fcn getStackFrameCount(): nat

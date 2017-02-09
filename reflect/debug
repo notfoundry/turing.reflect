@@ -1,0 +1,50 @@
+unit
+module Debug
+    import Opcodes in "%oot/reflect/Opcodes.tu",
+        TClass in "%oot/reflect/TClass.tu",
+        StackTrace in "%oot/reflect/debugging/StackTrace.tu",
+        StackFrame in "%oot/reflect/debugging/StackFrame.tu",
+        SimpleStackTrace in "%oot/reflect/internal/debugging/SimpleStackTrace.tu",
+        SimpleStackFrame in "%oot/reflect/internal/debugging/SimpleStackFrame.tu",
+        Universe in "%oot/reflect/universe"
+    export ~.stacktrace
+
+    const ops: array 1..* of Opcodes.TYPE := init(
+        PROC, 0,
+        LOCATELOC, 0,
+        FETCHADDR,
+        LOCATEPARM, 0,
+        FETCHADDR,
+        ASNADDRINV,
+        RETURN
+    )
+
+    fcn stacktrace: unchecked ^StackTrace
+        type __func: fcn x(): addressint
+        
+        const FUNCTION_ADDRESS_OFFSET := 12
+        
+        const CLASS_ADDRESS_OFFSET := 20
+        
+        var address := addressint @ (cheat(__func, addr(ops))())
+        
+        var frames: flexible array 1..0 of unchecked ^StackFrame
+        
+        loop
+            exit when address = 0
+            var newFrame: ^SimpleStackFrame
+            var frameFunction := reflectf(addressint @ (address + FUNCTION_ADDRESS_OFFSET))
+            var frameClass: unchecked ^TClass := nil
+            
+            new newFrame; newFrame -> construct(frameFunction, nil, 0);
+            new frames, upper(frames) + 1
+            frames(upper(frames)) := newFrame
+            address := addressint @ (address)
+        end loop
+        
+        var trace: ^SimpleStackTrace
+        new trace; trace -> construct(frames);
+        result trace
+    end stacktrace
+
+end Debug
