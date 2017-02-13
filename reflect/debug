@@ -2,6 +2,7 @@ unit
 module Debug
     import Opcodes in "%oot/reflect/Opcodes.tu",
         TClass in "%oot/reflect/TClass.tu",
+        TFunction in "%oot/reflect/TFunction.tu",
         StackTrace in "%oot/reflect/debugging/StackTrace.tu",
         StackFrame in "%oot/reflect/debugging/StackFrame.tu",
         SimpleStackTrace in "%oot/reflect/internal/debugging/SimpleStackTrace.tu",
@@ -19,12 +20,39 @@ module Debug
         RETURN
     )
 
+    fcn getFrameClass(frameAddress: addressint): unchecked ^TClass
+        const GLOBAL_FUNCTION_ADDRESS_OFFSET := 12
+        
+        const CLASS_FUNCTION_ADDRESS_OFFSET := 16
+        
+        const CLASS_INSTANCE_OFFSET := 20
+        
+        if (Opcodes.TYPE @ (addressint @ (frameAddress + GLOBAL_FUNCTION_ADDRESS_OFFSET)) = PROC) then
+            result nil
+        elsif (Opcodes.TYPE @ (addressint @ (frameAddress + CLASS_FUNCTION_ADDRESS_OFFSET)) = PROC) then
+            result reflectc(addressint @ (addressint @ (frameAddress + CLASS_INSTANCE_OFFSET)))
+        else
+            result nil
+        end if
+    end getFrameClass
+    
+    fcn getFrameFunction(frameAddress: addressint): unchecked ^TFunction
+        const GLOBAL_FUNCTION_ADDRESS_OFFSET := 12
+        
+        const CLASS_FUNCTION_ADDRESS_OFFSET := 16
+        
+        if (Opcodes.TYPE @ (addressint @ (frameAddress + GLOBAL_FUNCTION_ADDRESS_OFFSET)) = PROC) then
+            %resolve the common case early to prevent illegal reads
+            result reflectf(addressint @ (frameAddress + GLOBAL_FUNCTION_ADDRESS_OFFSET))
+        elsif (Opcodes.TYPE @ (addressint @ (frameAddress + CLASS_FUNCTION_ADDRESS_OFFSET)) = PROC) then
+            result reflectf(addressint @ (frameAddress + CLASS_FUNCTION_ADDRESS_OFFSET))
+        else
+            result nil
+        end if
+    end getFrameFunction
+    
     fcn stacktrace: unchecked ^StackTrace
         type __func: fcn x(): addressint
-        
-        const FUNCTION_ADDRESS_OFFSET := 12
-        
-        const CLASS_ADDRESS_OFFSET := 20
         
         var address := addressint @ (cheat(__func, addr(ops))())
         
@@ -33,10 +61,10 @@ module Debug
         loop
             exit when address = 0
             var newFrame: ^SimpleStackFrame
-            var frameFunction := reflectf(addressint @ (address + FUNCTION_ADDRESS_OFFSET))
-            var frameClass: unchecked ^TClass := nil
+            var frameFunction := getFrameFunction(address)
+            var frameClass := getFrameClass(address)
             
-            new newFrame; newFrame -> construct(frameFunction, nil, 0);
+            new newFrame; newFrame -> construct(frameFunction, frameClass, 0);
             new frames, upper(frames) + 1
             frames(upper(frames)) := newFrame
             address := addressint @ (address)
