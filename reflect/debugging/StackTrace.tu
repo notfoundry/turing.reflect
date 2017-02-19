@@ -30,10 +30,10 @@ class StackTrace
             if (calledFunction ~= nil) then
                 address := "0x" + natstr(calledFunction -> getContext() -> getStartAddress(), 0, 16)
             else
-                address := "<root>"
+                address := "<unknown>"
             end if
             
-            put " - @", context, ".", address, " (File ", 0, ", Line ", frame -> getLineNumber(), ")\n"..
+            put i, " - @", context, ".", address, " (File ", 0, ", Line ", frame -> getLineNumber(), ")"
         end for
     end printStackTrace
 end StackTrace

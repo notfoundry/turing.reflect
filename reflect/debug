@@ -47,9 +47,32 @@ module Debug
         elsif (Opcodes.TYPE @ (addressint @ (frameAddress + CLASS_FUNCTION_ADDRESS_OFFSET)) = PROC) then
             result reflectf(addressint @ (frameAddress + CLASS_FUNCTION_ADDRESS_OFFSET))
         else
-            result nil
+            var op := addressint @ (frameAddress + GLOBAL_FUNCTION_ADDRESS_OFFSET)
+            loop
+                exit when Opcodes.TYPE @ (op) = PROC & Opcodes.TYPE @ (op - Opcodes.OP_SIZE * 2) ~= JUMP
+                op -= Opcodes.OP_SIZE
+            end loop
+            result reflectf(op)
         end if
     end getFrameFunction
+    
+    fcn getFrameExitLocation(frameAddress: addressint): addressint
+        const FUNCTION_EXIT_POINT_ADDRESS_OFFSET := 8
+        result addressint @ (frameAddress + FUNCTION_EXIT_POINT_ADDRESS_OFFSET)
+    end getFrameExitLocation
+    
+    fcn adjustAddressForStackSpace(address: addressint): addressint
+        if (addressint @ (address + Opcodes.OP_SIZE * 2) = 0) then
+            result address
+        else
+            
+            const offsetSize := Opcodes.TYPE @ (addressint @ (address + Opcodes.OP_SIZE * 2) + Opcodes.OP_SIZE)
+            
+            %put "found: ", addressint @ (address + Opcodes.OP_SIZE * 7)
+            
+            result address + offsetSize - Opcodes.OP_SIZE
+        end if
+    end adjustAddressForStackSpace
     
     fcn stacktrace: unchecked ^StackTrace
         type __func: fcn x(): addressint
@@ -60,11 +83,16 @@ module Debug
         
         loop
             exit when address = 0
-            var newFrame: ^SimpleStackFrame
-            var frameFunction := getFrameFunction(address)
-            var frameClass := getFrameClass(address)
             
-            new newFrame; newFrame -> construct(frameFunction, frameClass, 0);
+            const adjustedAddress := adjustAddressForStackSpace(address)
+            
+            var newFrame: ^SimpleStackFrame
+            var frameFunction := getFrameFunction(adjustedAddress)
+            
+            var frameClass := getFrameClass(adjustedAddress)
+            var frameExitLocation := getFrameExitLocation(address)
+            
+            new newFrame; newFrame -> construct(frameFunction, frameClass, 0, frameExitLocation);
             new frames, upper(frames) + 1
             frames(upper(frames)) := newFrame
             address := addressint @ (address)

@@ -9,10 +9,13 @@ class SimpleStackFrame
     
     var lineNumber: nat
     
-    proc construct(__calledFunction: unchecked ^TFunction, __containerClass: unchecked ^TClass, __lineNumber: nat)
+    var exitLocation: addressint
+    
+    proc construct(__calledFunction: unchecked ^TFunction, __containerClass: unchecked ^TClass, __lineNumber: nat, __exitLocation: addressint)
         calledFunction := __calledFunction
         containerClass := __containerClass
         lineNumber := __lineNumber
+        exitLocation := __exitLocation
     end construct
     
     body fcn getCalledFunction(): unchecked ^TFunction
@@ -26,5 +29,9 @@ class SimpleStackFrame
     body fcn getLineNumber(): nat
         result lineNumber
     end getLineNumber
+    
+    body fcn getExitLocation(): addressint
+        result exitLocation
+    end getExitLocation
     
 end SimpleStackFrame

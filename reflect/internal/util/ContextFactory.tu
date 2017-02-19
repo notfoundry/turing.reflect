@@ -47,7 +47,7 @@ module ContextFactory
     end isFunction
     
     fcn isClassEnd(address: addressint): boolean
-        var op := Opcodes.TYPE @ (address)
+        var op: Opcodes.TYPE := Opcodes.TYPE @ (address)
         case (op) of
         label RETURN:
             if (Opcodes.TYPE @ (address-Opcodes.OP_SIZE) = ASNADDR) then result true
@@ -58,6 +58,7 @@ module ContextFactory
     end isClassEnd
     
     fcn makeFunctionContext(procedureAddr: cheat addressint, internal: boolean): unchecked ^FunctionContext
+        assert Opcodes.TYPE @ (procedureAddr) = PROC
         var endAddress: addressint
         var isFunc, hasHandler, foundEndAddress, foundFunc: boolean := false
         
@@ -105,7 +106,7 @@ module ContextFactory
         var lineCount: nat := 1
         var opCount: nat := 0
         loop
-            var op := Opcodes.TYPE @ (curr)
+            var op: Opcodes.TYPE := Opcodes.TYPE @ (curr)
             exit when foundEndAddress
             if (~foundEndAddress & isClassEnd(curr)) then
                 endAddress := curr

@@ -154,4 +154,9 @@ class LocalTFunction
         
         result returnType
     end getReturnType
+    
+    body fcn equals(o: unchecked ^anyclass): boolean
+        result objectclass(o) >= TFunction & TFunction(o).getContext() -> getStartAddress() = context -> getStartAddress()
+    end equals
+    
 end LocalTFunction
