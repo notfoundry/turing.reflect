@@ -1,10 +1,10 @@
-##A code introspection and reflection framework for the Turing interpreter
+## The code introspection and reflection framework for the Turing interpreter
 
-###What is it?
+### What is it?
 turing.reflect provides an API for reflectively accessing and analyzing classes, functions, and fields in the Turing runtime.
 This is done by analyzing the internal representations of running code to reconstruct what its source-level equivalent would be, along with manipulating the interpreter to run certain dynamically-generated instructions that would otherwise be unable to exist.
 
-###How does it work?
+### How does it work?
 The first thing you'll need to do to get started with turing.reflect is copy the *reflect* folder of this project to the main directory of your Turing interpreter (where the Turing executable is located), or if you are using the newer Qt-based OpenTuring editor, the upper-level support directory containing all the Qt DLLs and the larger OpenTuring executable.
 Once that is complete, you can import turing.reflect into your project by inserting this line into a source file header
 > import "%oot/reflect/universe"
@@ -85,7 +85,7 @@ we can scan the TestSuite class for all functions annotated with *test*, and pri
 
 The annotation reflection API also allows you enumerate all annotations present on any given code construct, along with the number of elements that annotation has.
 
-###Invoking functions with arguments reflectively
+### Invoking functions with arguments reflectively
 To invoke functions that take arguments of some kind, **TFunction**'s *invoke* function isn't good enough. Instead, *TFunction* defines a separate function *invokeArgs* to accomplish this. Similar to *invoke*, you pass arguments defining the function return address and class instance address to use for the invocation (these are ignored if the function has no return value or is not in a class, respectively).
 Take the example of this greeting function
 ```turing
@@ -123,7 +123,7 @@ put greeting /* prints "to Mike: YOYOYOYOYO" */
 
 As you can see, the syntax for these invocations is fluent and simple. We provide four arguments to the **invocation context** through the *with* function, and call *do* to finally perform the invocation. This has the happy side effect of allowing arguments for invocation to be accumulated over time prior to invocation, instead of passing them all at once.
 
-###Features
+### Features
 turing.reflect has a fairly broad feature set, closely mimicking Java's reflection API, including
   * class instance creation
   * class assignability checks
